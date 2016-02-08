@@ -6,7 +6,6 @@
 
 module Language.Java.Class(
   module C
-, test
 ) where
 
 import Language.Java.Class.Attribute as C
@@ -27,10 +26,3 @@ import Language.Java.Class.ThisAccessFlags as C
 import Language.Java.Class.ThisClass as C
 import Language.Java.Class.Version as C
 
-import Data.Tickle(RunGetResult, Get, runGetFile)
-import System.IO(IO)
-
-test ::
-  IO (RunGetResult (ClassFileError []) (ClassFile' []))
-test =
-  runGetFile (classFile :: Get (ClassFileError []) (ClassFile' [])) "/home/tmorris/Desktop/Trademark.class"
