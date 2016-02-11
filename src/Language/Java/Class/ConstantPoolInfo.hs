@@ -620,51 +620,51 @@ constantPoolInfo ::
     Word8,
   Cons (q Char) (q Char) Char Char,
   AsConstantPoolInfoInvalidConstantPoolTag
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoNameAndType2UnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoNameAndType1UnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoMethodRef2UnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoMethodRef1UnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoFieldRef2UnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoFieldRef1UnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoConstantStringUnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoConstantClassUnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoConstantDoubleUnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoConstantLongUnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoConstantFloatUnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoConstantIntegerUnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
-  AsConstantPoolInvalidJavaString Data.Tagged.Tagged Identity s,
+    Tagged Identity (s c),
+  AsConstantPoolInvalidJavaString Tagged Identity s,
   AsConstantPoolInfoUtf8UnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoUtf8LengthUnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
+    Tagged Identity (s c),
   AsConstantPoolInfoTagUnexpectedEof
-    Data.Tagged.Tagged Identity (s c),
-  AsUtf8 Data.Tagged.Tagged Identity s1,
-  AsNameAndType Data.Tagged.Tagged Identity (s1 q),
-  AsConstantDouble Data.Tagged.Tagged Identity (s1 q),
-  AsConstantLong Data.Tagged.Tagged Identity (s1 q),
-  AsConstantFloat Data.Tagged.Tagged Identity (s1 q),
-  AsConstantInteger Data.Tagged.Tagged Identity (s1 q),
-  AsConstantString Data.Tagged.Tagged Identity (s1 q),
-  AsInterfaceMethodRef Data.Tagged.Tagged Identity (s1 q),
-  AsMethodRef Data.Tagged.Tagged Identity (s1 q),
-  AsFieldRef Data.Tagged.Tagged Identity (s1 q),
-  AsConstantClass Data.Tagged.Tagged Identity (s1 q)) =>
+    Tagged Identity (s c),
+  AsUtf8 Tagged Identity s1,
+  AsNameAndType Tagged Identity (s1 q),
+  AsConstantDouble Tagged Identity (s1 q),
+  AsConstantLong Tagged Identity (s1 q),
+  AsConstantFloat Tagged Identity (s1 q),
+  AsConstantInteger Tagged Identity (s1 q),
+  AsConstantString Tagged Identity (s1 q),
+  AsInterfaceMethodRef Tagged Identity (s1 q),
+  AsMethodRef Tagged Identity (s1 q),
+  AsFieldRef Tagged Identity (s1 q),
+  AsConstantClass Tagged Identity (s1 q)) =>
   Get (s c) (s1 q)
 constantPoolInfo =
   let eset = bimap . return
