@@ -69,13 +69,13 @@ import Data.Char(Char, chr)
 import Data.Eq(Eq((==)))
 import Data.Functor.Identity(Identity)
 import Data.Int(Int32, Int64)
-import Data.Maybe(Maybe(Just, Nothing))
+import Data.Maybe(Maybe(Just, Nothing), fromMaybe)
 import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle((!-), Get, failGet, word8, word16be, int32be, float32be, int64be, float64be)
 import Data.Tuple(curry, uncurry)
 import Data.Word(Word8, Word16)
-import Prelude(Show, Num((+)), Integral, fromIntegral, Float, Double, error)
+import Prelude(Show, Num((+)), Integral, fromIntegral, Float, Double)
 
 -- |
 --
@@ -667,6 +667,65 @@ constantPoolInfo ::
   AsConstantClass Tagged Identity (s1 q)) =>
   Get (s c) (s1 q)
 constantPoolInfo =
+  constantPoolInfo' (\_ -> Nothing)
+
+constantPoolInfo' ::
+  (AsEmpty (c Word8), AsEmpty (q Char),
+  Cons
+    (c Word8)
+    (c Word8)
+    Word8
+    Word8,
+  Cons (q Char) (q Char) Char Char,
+  AsConstantPoolInfoInvalidConstantPoolTag
+    Tagged Identity (s c),
+  AsConstantPoolInfoNameAndType2UnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoNameAndType1UnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoMethodRef2UnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoMethodRef1UnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoFieldRef2UnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoFieldRef1UnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoConstantStringUnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoConstantClassUnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoConstantDoubleUnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoConstantLongUnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoConstantFloatUnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoConstantIntegerUnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInvalidJavaString Tagged Identity s,
+  AsConstantPoolInfoUtf8UnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoUtf8LengthUnexpectedEof
+    Tagged Identity (s c),
+  AsConstantPoolInfoTagUnexpectedEof
+    Tagged Identity (s c),
+  AsUtf8 Tagged Identity s1,
+  AsNameAndType Tagged Identity (s1 q),
+  AsConstantDouble Tagged Identity (s1 q),
+  AsConstantLong Tagged Identity (s1 q),
+  AsConstantFloat Tagged Identity (s1 q),
+  AsConstantInteger Tagged Identity (s1 q),
+  AsConstantString Tagged Identity (s1 q),
+  AsInterfaceMethodRef Tagged Identity (s1 q),
+  AsMethodRef Tagged Identity (s1 q),
+  AsFieldRef Tagged Identity (s1 q),
+  AsConstantClass Tagged Identity (s1 q)) =>
+  (Word8 -> Maybe (Get (s c) (s1 q))) 
+  -> Get (s c) (s1 q)
+constantPoolInfo' f =
   let eset = bimap . return
       two16 t e1 e2 =
         do c <- e1 !- word16be
@@ -700,11 +759,5 @@ constantPoolInfo =
             two16 (curry (_InterfaceMethodRef #)) constantPoolInfoInterfaceMethodRef1UnexpectedEof constantPoolInfoMethodRef2UnexpectedEof
           12 ->
             two16 (curry (_NameAndType #)) constantPoolInfoNameAndType1UnexpectedEof constantPoolInfoNameAndType2UnexpectedEof
-          15 ->
-            error ">=se7.0 todo [15]"
-          16 -> 
-            error ">=se7.0 todo [16]"
-          18 -> 
-            error ">=se7.0 todo [18]"
-          _ -> 
-            failGet (_ConstantPoolInfoInvalidConstantPoolTag # t)
+          _ ->
+            fromMaybe (failGet (_ConstantPoolInfoInvalidConstantPoolTag # t)) (f t) 
