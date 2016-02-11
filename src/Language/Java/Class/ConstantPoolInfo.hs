@@ -62,12 +62,13 @@ import Data.Maybe(Maybe(Just, Nothing))
 import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle((!-), Get, failGet, word8, word16be, int32be, float32be, int64be, float64be)
+import Data.Tuple(uncurry)
 import Data.Word(Word8, Word16)
 import Prelude(Show, Num((+)), Integral, fromIntegral, Float, Double, error)
 
 -- |
 --
--- <https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4-140 Table 4.3. Constant pool tags>
+-- < Table 4.3. Constant pool tags>
 data ConstantPoolInfo p =
   ConstantClass Word16
   | FieldRef Word16 Word16
@@ -84,6 +85,138 @@ data ConstantPoolInfo p =
 deriving instance Eq (p Char) => Eq (ConstantPoolInfo p)
 deriving instance Ord (p Char) => Ord (ConstantPoolInfo p)
 deriving instance Show (p Char) => Show (ConstantPoolInfo p)
+
+class AsConstantClass p f s where
+  _ConstantClass ::
+    Optic' p f s Word16
+
+instance (Choice p', Applicative f) => AsConstantClass p' f (ConstantPoolInfo p) where
+  _ConstantClass =
+    prism'
+      ConstantClass
+      (\p -> case p of
+               ConstantClass w -> Just w
+               _ -> Nothing)
+
+class AsFieldRef p f s where
+  _FieldRef ::
+    Optic' p f s (Word16, Word16)
+
+instance (Choice p', Applicative f) => AsFieldRef p' f (ConstantPoolInfo p) where
+  _FieldRef =
+    prism'
+      (uncurry FieldRef)
+      (\p -> case p of
+               FieldRef w1 w2 -> Just (w1, w2)
+               _ -> Nothing)
+
+class AsMethodRef p f s where
+  _MethodRef ::
+    Optic' p f s (Word16, Word16)
+
+instance (Choice p', Applicative f) => AsMethodRef p' f (ConstantPoolInfo p) where
+  _MethodRef =
+    prism'
+      (uncurry MethodRef)
+      (\p -> case p of
+               MethodRef w1 w2 -> Just (w1, w2)
+               _ -> Nothing)
+
+class AsInterfaceMethodRef p f s where
+  _InterfaceMethodRef ::
+    Optic' p f s (Word16, Word16)
+
+instance (Choice p', Applicative f) => AsInterfaceMethodRef p' f (ConstantPoolInfo p) where
+  _InterfaceMethodRef =
+    prism'
+      (uncurry InterfaceMethodRef)
+      (\p -> case p of
+               InterfaceMethodRef w1 w2 -> Just (w1, w2)
+               _ -> Nothing)
+
+class AsConstantString p f s where
+  _ConstantString ::
+    Optic' p f s Word16
+
+instance (Choice p', Applicative f) => AsConstantString p' f (ConstantPoolInfo p) where
+  _ConstantString =
+    prism'
+      ConstantString
+      (\p -> case p of
+               ConstantString w -> Just w
+               _ -> Nothing)
+
+class AsConstantInteger p f s where
+  _ConstantInteger ::
+    Optic' p f s Int32
+
+instance (Choice p', Applicative f) => AsConstantInteger p' f (ConstantPoolInfo p) where
+  _ConstantInteger =
+    prism'
+      ConstantInteger
+      (\p -> case p of
+               ConstantInteger w -> Just w
+               _ -> Nothing)
+
+class AsConstantFloat p f s where
+  _ConstantFloat ::
+    Optic' p f s Float
+
+instance (Choice p', Applicative f) => AsConstantFloat p' f (ConstantPoolInfo p) where
+  _ConstantFloat =
+    prism'
+      ConstantFloat
+      (\p -> case p of
+               ConstantFloat w -> Just w
+               _ -> Nothing)
+
+class AsConstantLong p f s where
+  _ConstantLong ::
+    Optic' p f s Int64
+
+instance (Choice p', Applicative f) => AsConstantLong p' f (ConstantPoolInfo p) where
+  _ConstantLong =
+    prism'
+      ConstantLong
+      (\p -> case p of
+               ConstantLong w -> Just w
+               _ -> Nothing)
+
+class AsConstantDouble p f s where
+  _ConstantDouble ::
+    Optic' p f s Double
+
+instance (Choice p', Applicative f) => AsConstantDouble p' f (ConstantPoolInfo p) where
+  _ConstantDouble =
+    prism'
+      ConstantDouble
+      (\p -> case p of
+               ConstantDouble w -> Just w
+               _ -> Nothing)
+
+class AsNameAndType p f s where
+  _NameAndType ::
+    Optic' p f s (Word16, Word16)
+
+instance (Choice p', Applicative f) => AsNameAndType p' f (ConstantPoolInfo p) where
+  _NameAndType =
+    prism'
+      (uncurry NameAndType)
+      (\p -> case p of
+               NameAndType w1 w2 -> Just (w1, w2)
+               _ -> Nothing)
+
+class AsUtf8 p f s where
+  _Utf8 ::
+    Optic' p f (s q) (Word16, q Char)
+
+instance (Choice p', Applicative f) => AsUtf8 p' f ConstantPoolInfo where
+  _Utf8 =
+    prism'
+      (uncurry Utf8)
+      (\p -> case p of
+               Utf8 w1 w2 -> Just (w1, w2)
+               _ -> Nothing)
 
 data ConstantPoolInfoError c =
   ConstantPoolInfoTagUnexpectedEof
