@@ -173,28 +173,7 @@ instance (Choice p, Applicative f) => AsConstantPoolInfoNameAndType2UnexpectedEo
 instance (Choice p, Applicative f) => AsConstantPoolInfoInvalidConstantPoolTag p f (ConstantPoolError c) where
   _ConstantPoolInfoInvalidConstantPoolTag =
     _ConstantPoolConstantPoolInfoError . _ConstantPoolInfoInvalidConstantPoolTag
-{-}
-constantPool ::
- (AsEmpty (c Word8), AsEmpty (t Char),
-  AsEmpty (c1 (ConstantPoolInfo p)),
-  Cons (c Word8) (c Word8) Word8 Word8,
-  Cons (t Char) (t Char) Char Char,
-  Cons
-    (c1 (ConstantPoolInfo p))
-    (c1 (ConstantPoolInfo p))
-    (ConstantPoolInfo t)
-    (ConstantPoolInfo t),
-  AsConstantPoolCountUnexpectedEof Tagged Identity (s c),
-  AsConstantPoolConstantPoolInfoError Tagged Identity s) =>
-  Get (s c) (ConstantPool p c1)
-constantPool =
-  let jump (ConstantLong _) = subtract 1
-      jump (ConstantDouble _) = subtract 1
-      jump _ = id
-  in do constant_pool_count <- constantPoolCountUnexpectedEof !- word16be
-        pool <- (_ConstantPoolConstantPoolInfoError #) !!- replicateN (\n -> (\i -> (jump i n, i)) <$> constantPoolInfo) (constant_pool_count - 1)
-        return (ConstantPool constant_pool_count pool)
--}
+
 constantPool ::
   (AsEmpty (c Word8), AsEmpty (q Char),
     AsEmpty (c1 (ConstantPoolInfo p')),
