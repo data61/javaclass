@@ -55,6 +55,7 @@ module Language.Java.Class.ConstantPoolInfo (
 , constantPoolInfoNameAndType2UnexpectedEof
 , AsConstantPoolInfoInvalidConstantPoolTag(..)
 , constantPoolInfo
+, constantPoolInfo'
 ) where
 
 import Control.Applicative(Applicative)

@@ -7,6 +7,7 @@
 
 module Language.Java.Class.ConstantPool(
   ConstantPool(..)
+, AsConstantPool(..)
 , ConstantPoolError(..)
 , AsConstantPoolCountUnexpectedEof(..)
 , constantPoolCountUnexpectedEof
@@ -14,23 +15,25 @@ module Language.Java.Class.ConstantPool(
 , constantPool
 ) where
 
-import Control.Applicative(Applicative)
+import Control.Applicative(Applicative, liftA2)
 import Control.Category((.), id)
-import Control.Lens(Choice, Optic', Cons, AsEmpty, prism', ( # ))
+import Control.Lens(Choice, Optic', Cons, AsEmpty, Profunctor, prism', iso, isn't, ( # ))
+import Control.Lens.Internal.Prism
 import Control.Monad(Monad(return))
 import Control.Replicate(replicateN)
+import Data.Bool(bool, (&&))
 import Data.Char(Char)
 import Data.Eq(Eq)
-import Data.Functor((<$>))
+import Data.Functor((<$>), Functor)
 import Data.Functor.Identity(Identity)
+import Data.Int(Int64)
 import Data.Maybe(Maybe(Just, Nothing))
 import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle(Get, word16be, (!-), (!!-))
 import Data.Word(Word8, Word16)
-import Language.Java.Class.ConstantPoolInfo(AsConstantPoolInfoTagUnexpectedEof(_ConstantPoolInfoTagUnexpectedEof), AsConstantPoolInfoUtf8LengthUnexpectedEof(_ConstantPoolInfoUtf8LengthUnexpectedEof), AsConstantPoolInfoUtf8UnexpectedEof(_ConstantPoolInfoUtf8UnexpectedEof), AsConstantPoolInvalidJavaString(_ConstantPoolInvalidJavaString), AsConstantPoolInfoConstantIntegerUnexpectedEof(_ConstantPoolInfoConstantIntegerUnexpectedEof), AsConstantPoolInfoConstantFloatUnexpectedEof(_ConstantPoolInfoConstantFloatUnexpectedEof), AsConstantPoolInfoConstantLongUnexpectedEof(_ConstantPoolInfoConstantLongUnexpectedEof), AsConstantPoolInfoConstantDoubleUnexpectedEof(_ConstantPoolInfoConstantDoubleUnexpectedEof), AsConstantPoolInfoConstantClassUnexpectedEof(_ConstantPoolInfoConstantClassUnexpectedEof), AsConstantPoolInfoConstantStringUnexpectedEof(_ConstantPoolInfoConstantStringUnexpectedEof), AsConstantPoolInfoFieldRef1UnexpectedEof(_ConstantPoolInfoFieldRef1UnexpectedEof), AsConstantPoolInfoFieldRef2UnexpectedEof(_ConstantPoolInfoFieldRef2UnexpectedEof), AsConstantPoolInfoMethodRef1UnexpectedEof(_ConstantPoolInfoMethodRef1UnexpectedEof), AsConstantPoolInfoMethodRef2UnexpectedEof(_ConstantPoolInfoMethodRef2UnexpectedEof), AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof(_ConstantPoolInfoInterfaceMethodRef1UnexpectedEof), AsConstantPoolInfoInterfaceMethodRef2UnexpectedEof(_ConstantPoolInfoInterfaceMethodRef2UnexpectedEof), AsConstantPoolInfoNameAndType1UnexpectedEof(_ConstantPoolInfoNameAndType1UnexpectedEof), AsConstantPoolInfoNameAndType2UnexpectedEof(_ConstantPoolInfoNameAndType2UnexpectedEof), AsConstantPoolInfoInvalidConstantPoolTag(_ConstantPoolInfoInvalidConstantPoolTag), ConstantPoolInfo(ConstantLong, ConstantDouble), ConstantPoolInfoError, constantPoolInfo)
-import Prelude(Show, Num((-)), subtract)
-
+import Language.Java.Class.ConstantPoolInfo(AsConstantPoolInfoTagUnexpectedEof(_ConstantPoolInfoTagUnexpectedEof), AsConstantPoolInfoUtf8LengthUnexpectedEof(_ConstantPoolInfoUtf8LengthUnexpectedEof), AsConstantPoolInfoUtf8UnexpectedEof(_ConstantPoolInfoUtf8UnexpectedEof), AsConstantPoolInvalidJavaString(_ConstantPoolInvalidJavaString), AsConstantPoolInfoConstantIntegerUnexpectedEof(_ConstantPoolInfoConstantIntegerUnexpectedEof), AsConstantPoolInfoConstantFloatUnexpectedEof(_ConstantPoolInfoConstantFloatUnexpectedEof), AsConstantPoolInfoConstantLongUnexpectedEof(_ConstantPoolInfoConstantLongUnexpectedEof), AsConstantPoolInfoConstantDoubleUnexpectedEof(_ConstantPoolInfoConstantDoubleUnexpectedEof), AsConstantPoolInfoConstantClassUnexpectedEof(_ConstantPoolInfoConstantClassUnexpectedEof), AsConstantPoolInfoConstantStringUnexpectedEof(_ConstantPoolInfoConstantStringUnexpectedEof), AsConstantPoolInfoFieldRef1UnexpectedEof(_ConstantPoolInfoFieldRef1UnexpectedEof), AsConstantPoolInfoFieldRef2UnexpectedEof(_ConstantPoolInfoFieldRef2UnexpectedEof), AsConstantPoolInfoMethodRef1UnexpectedEof(_ConstantPoolInfoMethodRef1UnexpectedEof), AsConstantPoolInfoMethodRef2UnexpectedEof(_ConstantPoolInfoMethodRef2UnexpectedEof), AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof(_ConstantPoolInfoInterfaceMethodRef1UnexpectedEof), AsConstantPoolInfoInterfaceMethodRef2UnexpectedEof(_ConstantPoolInfoInterfaceMethodRef2UnexpectedEof), AsConstantPoolInfoNameAndType1UnexpectedEof(_ConstantPoolInfoNameAndType1UnexpectedEof), AsConstantPoolInfoNameAndType2UnexpectedEof(_ConstantPoolInfoNameAndType2UnexpectedEof), AsConstantPoolInfoInvalidConstantPoolTag(_ConstantPoolInfoInvalidConstantPoolTag), ConstantPoolInfo(ConstantLong, ConstantDouble), ConstantPoolInfoError, constantPoolInfo, _ConstantDouble, _ConstantLong, AsUtf8, AsConstantLong, AsConstantFloat, AsConstantInteger, AsConstantString, AsInterfaceMethodRef, AsMethodRef, AsFieldRef, AsConstantClass, AsNameAndType, AsConstantDouble)
+import Prelude(Show, Num((-)), Double, subtract)
 
 -- |
 --
@@ -43,6 +46,16 @@ data ConstantPool p c =
 deriving instance Eq (c (ConstantPoolInfo p)) => Eq (ConstantPool p c)
 deriving instance Ord (c (ConstantPoolInfo p)) => Ord (ConstantPool p c)
 deriving instance Show (c (ConstantPoolInfo p)) => Show (ConstantPool p c)
+
+class AsConstantPool p f s where
+  _ConstantPool ::
+    Optic' p f (s p' c) (Word16, c (ConstantPoolInfo p'))
+
+instance (Profunctor p, Functor f) => AsConstantPool p f ConstantPool where
+  _ConstantPool =
+    iso
+      (\(ConstantPool w i) -> (w, i))
+      (\(w, i) -> ConstantPool w i)
 
 data ConstantPoolError c =
   ConstantPoolCountUnexpectedEof
@@ -180,3 +193,45 @@ constantPool =
   in do constant_pool_count <- constantPoolCountUnexpectedEof !- word16be
         pool <- (_ConstantPoolConstantPoolInfoError #) !!- replicateN (\n -> (\i -> (jump i n, i)) <$> constantPoolInfo) (constant_pool_count - 1)
         return (ConstantPool constant_pool_count pool)
+
+constantPool' ::
+  (AsEmpty (c Word8), AsEmpty (q Char),
+    AsEmpty (c1 (ConstantPoolInfo p')),
+    Cons
+      (c Word8)
+      (c Word8)
+      Word8
+      Word8,
+    Cons (q Char) (q Char) Char Char,
+    Cons
+      (c1 (ConstantPoolInfo p'))
+      (c1 (ConstantPoolInfo p'))
+      (s1 q)
+      (s1 q),
+    AsUtf8 Tagged Identity s1,
+    AsNameAndType Tagged Identity (s1 q),
+    AsConstantDouble Tagged Identity (s1 q),
+    AsConstantDouble
+      (Market Double Double) Identity (s1 q),
+    AsConstantLong Tagged Identity (s1 q),
+    AsConstantLong
+      (Market Int64 Int64)
+      Identity
+      (s1 q),
+    AsConstantFloat Tagged Identity (s1 q),
+    AsConstantInteger Tagged Identity (s1 q),
+    AsConstantString Tagged Identity (s1 q),
+    AsInterfaceMethodRef Tagged Identity (s1 q),
+    AsMethodRef Tagged Identity (s1 q),
+    AsFieldRef Tagged Identity (s1 q),
+    AsConstantClass Tagged Identity (s1 q),
+    AsConstantPoolConstantPoolInfoError Tagged Identity s,
+    AsConstantPoolCountUnexpectedEof Tagged Identity (s c),
+    AsConstantPool Tagged Identity s2) =>
+  Get (s c) (s2 p' c1)
+constantPool' =
+  let jump =
+        bool (subtract 1) id . liftA2 (&&) (isn't _ConstantLong) (isn't _ConstantDouble)
+  in do constant_pool_count <- constantPoolCountUnexpectedEof !- word16be
+        pool <- (_ConstantPoolConstantPoolInfoError #) !!- replicateN (\n -> (\i -> (jump i n, i)) <$> constantPoolInfo) (constant_pool_count - 1)
+        return (_ConstantPool # (constant_pool_count, pool))
