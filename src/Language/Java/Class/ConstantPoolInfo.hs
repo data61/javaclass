@@ -5,8 +5,19 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.ConstantPoolInfo(
+module Language.Java.Class.ConstantPoolInfo (
   ConstantPoolInfo(..)
+, AsConstantClass(..)
+, AsFieldRef(..)
+, AsMethodRef(..)
+, AsInterfaceMethodRef(..)
+, AsConstantString(..)
+, AsConstantInteger(..)
+, AsConstantFloat(..)
+, AsConstantLong(..)
+, AsConstantDouble(..)
+, AsNameAndType(..)
+, AsUtf8(..)
 , ConstantPoolInfoError(..)
 , AsConstantPoolInfoTagUnexpectedEof(..)
 , constantPoolInfoTagUnexpectedEof
@@ -62,7 +73,7 @@ import Data.Maybe(Maybe(Just, Nothing))
 import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle((!-), Get, failGet, word8, word16be, int32be, float32be, int64be, float64be)
-import Data.Tuple(uncurry)
+import Data.Tuple(curry, uncurry)
 import Data.Word(Word8, Word16)
 import Prelude(Show, Num((+)), Integral, fromIntegral, Float, Double, error)
 
@@ -600,33 +611,61 @@ getJavaString q =
            (getJavaString rest >>= return . (chr (fromIntegral x) <|))
            ((x .&. 0x80) == 0)
 
-constantPoolInfo :: -- todo use Optic instead of ConstantPoolInfo constructors, to handle different JVM versions
-  (AsEmpty (c Word8), AsEmpty (p Char),
-    Cons (c Word8) (c Word8) Word8 Word8,
-    Cons (p Char) (p Char) Char Char,
-    AsConstantPoolInfoTagUnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoUtf8LengthUnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoUtf8UnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInvalidJavaString Tagged Identity s,
-    AsConstantPoolInfoConstantIntegerUnexpectedEof
-      Tagged Identity (s c),
-    AsConstantPoolInfoConstantFloatUnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoConstantLongUnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoConstantDoubleUnexpectedEof
-      Tagged Identity (s c),
-    AsConstantPoolInfoConstantClassUnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoConstantStringUnexpectedEof
-      Tagged Identity (s c),
-    AsConstantPoolInfoFieldRef1UnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoFieldRef2UnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoMethodRef2UnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoMethodRef1UnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof
-      Tagged Identity (s c),
-    AsConstantPoolInfoNameAndType1UnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoNameAndType2UnexpectedEof Tagged Identity (s c),
-    AsConstantPoolInfoInvalidConstantPoolTag Tagged Identity (s c)) =>
-  Get (s c) (ConstantPoolInfo p)
+constantPoolInfo ::
+  (AsEmpty (c Word8), AsEmpty (q Char),
+  Cons
+    (c Word8)
+    (c Word8)
+    Word8
+    Word8,
+  Cons (q Char) (q Char) Char Char,
+  AsConstantPoolInfoInvalidConstantPoolTag
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoNameAndType2UnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoNameAndType1UnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoMethodRef2UnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoMethodRef1UnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoFieldRef2UnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoFieldRef1UnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoConstantStringUnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoConstantClassUnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoConstantDoubleUnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoConstantLongUnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoConstantFloatUnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoConstantIntegerUnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInvalidJavaString Data.Tagged.Tagged Identity s,
+  AsConstantPoolInfoUtf8UnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoUtf8LengthUnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsConstantPoolInfoTagUnexpectedEof
+    Data.Tagged.Tagged Identity (s c),
+  AsUtf8 Data.Tagged.Tagged Identity s1,
+  AsNameAndType Data.Tagged.Tagged Identity (s1 q),
+  AsConstantDouble Data.Tagged.Tagged Identity (s1 q),
+  AsConstantLong Data.Tagged.Tagged Identity (s1 q),
+  AsConstantFloat Data.Tagged.Tagged Identity (s1 q),
+  AsConstantInteger Data.Tagged.Tagged Identity (s1 q),
+  AsConstantString Data.Tagged.Tagged Identity (s1 q),
+  AsInterfaceMethodRef Data.Tagged.Tagged Identity (s1 q),
+  AsMethodRef Data.Tagged.Tagged Identity (s1 q),
+  AsFieldRef Data.Tagged.Tagged Identity (s1 q),
+  AsConstantClass Data.Tagged.Tagged Identity (s1 q)) =>
+  Get (s c) (s1 q)
 constantPoolInfo =
   let eset = bimap . return
       two16 t e1 e2 =
@@ -640,27 +679,27 @@ constantPoolInfo =
                b <- replicateO (\n -> _ConstantPoolInfoUtf8UnexpectedEof # n !- word8) l
                case getJavaString b of
                  Nothing -> failGet (_ConstantPoolInvalidJavaString # b)
-                 Just s -> return (Utf8 l s)
+                 Just s -> return (_Utf8 # (l, s))
           3 ->
-            eset constantPoolInfoConstantIntegerUnexpectedEof ConstantInteger int32be
+            eset constantPoolInfoConstantIntegerUnexpectedEof (_ConstantInteger #) int32be
           4 ->
-            eset constantPoolInfoConstantFloatUnexpectedEof ConstantFloat float32be
+            eset constantPoolInfoConstantFloatUnexpectedEof (_ConstantFloat #) float32be
           5 ->
-            eset constantPoolInfoConstantLongUnexpectedEof ConstantLong int64be
+            eset constantPoolInfoConstantLongUnexpectedEof (_ConstantLong #) int64be
           6 ->
-            eset constantPoolInfoConstantDoubleUnexpectedEof ConstantDouble float64be
+            eset constantPoolInfoConstantDoubleUnexpectedEof (_ConstantDouble #) float64be
           7 ->
-            eset constantPoolInfoConstantClassUnexpectedEof ConstantClass word16be
+            eset constantPoolInfoConstantClassUnexpectedEof (_ConstantClass #) word16be
           8 ->
-            eset constantPoolInfoConstantStringUnexpectedEof ConstantString word16be
+            eset constantPoolInfoConstantStringUnexpectedEof (_ConstantString #) word16be
           9 ->
-            two16 FieldRef constantPoolInfoFieldRef1UnexpectedEof constantPoolInfoFieldRef2UnexpectedEof
+            two16 (curry (_FieldRef #)) constantPoolInfoFieldRef1UnexpectedEof constantPoolInfoFieldRef2UnexpectedEof
           10 ->
-            two16 MethodRef constantPoolInfoMethodRef1UnexpectedEof constantPoolInfoMethodRef2UnexpectedEof
+            two16 (curry (_MethodRef #)) constantPoolInfoMethodRef1UnexpectedEof constantPoolInfoMethodRef2UnexpectedEof
           11 ->
-            two16 InterfaceMethodRef constantPoolInfoInterfaceMethodRef1UnexpectedEof constantPoolInfoMethodRef2UnexpectedEof
+            two16 (curry (_InterfaceMethodRef #)) constantPoolInfoInterfaceMethodRef1UnexpectedEof constantPoolInfoMethodRef2UnexpectedEof
           12 ->
-            two16 NameAndType constantPoolInfoNameAndType1UnexpectedEof constantPoolInfoNameAndType2UnexpectedEof
+            two16 (curry (_NameAndType #)) constantPoolInfoNameAndType1UnexpectedEof constantPoolInfoNameAndType2UnexpectedEof
           15 ->
             error ">=se7.0 todo [15]"
           16 -> 
