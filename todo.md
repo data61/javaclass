@@ -1,2 +1,1 @@
-* ConstantPool info currently uses `error` when reading some >= 1.7 version tags.
-
+* `ClassFile` function to support both 1.5 and 1.7. 
