@@ -16,7 +16,7 @@ homepage:           https://github.com/NICTA/javaclass
 bug-reports:        https://github.com/NICTA/javaclass/issues
 cabal-version:      >= 1.10
 build-type:         Custom
-extra-source-files: changelog
+extra-source-files: changelog, todo.md
 
 source-repository   head
   type:             git
