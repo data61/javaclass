@@ -11,7 +11,7 @@ description:
   <<http://i.imgur.com/Ns5hntl.jpg>>
   .
   Java class files
-  https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html
+  <https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html>
 homepage:           https://github.com/NICTA/javaclass
 bug-reports:        https://github.com/NICTA/javaclass/issues
 cabal-version:      >= 1.10
