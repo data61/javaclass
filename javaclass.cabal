@@ -4,7 +4,7 @@ license:            OtherLicense
 license-file:       LICENSE
 author:             Tony Morris <ʇǝu˙sıɹɹoɯʇ@ןןǝʞsɐɥ>
 maintainer:         Tony Morris
-copyright:          Copyright (C) 2016 NICTA Limited
+copyright:          Copyright (c) 2016, Commonwealth Scientific and Industrial Research Organisation (CSIRO) ABN 41 687 119 230.
 synopsis:           Java class files
 category:           Data
 description:
@@ -12,15 +12,15 @@ description:
   .
   Java class files
   <https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html>
-homepage:           https://github.com/NICTA/javaclass
-bug-reports:        https://github.com/NICTA/javaclass/issues
+homepage:           https://github.com/data61/javaclass
+bug-reports:        https://github.com/data61/javaclass/issues
 cabal-version:      >= 1.10
 build-type:         Custom
 extra-source-files: changelog, todo.md
 
 source-repository   head
   type:             git
-  location:         git@github.com:NICTA/javaclass.git
+  location:         git@github.com:data61/javaclass.git
 
 flag                small_base
   description:      Choose the new, split-up base package.
