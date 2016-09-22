@@ -3,13 +3,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Language.Java.Class.FieldAccessFlags(
+module Language.Java.Class.FieldAccessFlags {- (
   FieldAccessFlags(..)
 , FieldAccessFlagsError(..)
 , AsFieldAccessFlagsUnexpectedEof(..)
 , fieldAccessFlagsUnexpectedEof
 , fieldAccessFlags
-) where
+) -} where
 
 import Control.Lens(Optic', Profunctor, iso, ( # ))
 import Control.Monad(return)
@@ -34,6 +34,7 @@ data FieldAccessFlagsError =
   FieldAccessFlagsUnexpectedEof
   deriving (Eq, Ord, Show)
 
+{-
 class AsFieldAccessFlagsUnexpectedEof p f s where
   _FieldAccessFlagsUnexpectedEof :: 
     Optic' p f s ()
@@ -56,3 +57,4 @@ fieldAccessFlags ::
 fieldAccessFlags =
   do af <- fieldAccessFlagsUnexpectedEof !- word16be
      return (FieldAccessFlags af)
+-}

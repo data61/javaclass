@@ -6,14 +6,14 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.Methods(
+module Language.Java.Class.Methods {- (
   Methods(..)
 , MethodsError(..)
 , AsMethodsInfoUnexpectedEof(..)
 , methodsInfoUnexpectedEof
 , AsMethodsMethodError(..)
 , methods
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Category((.))
@@ -27,9 +27,9 @@ import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle(Get, (!!-), (!-), word16be)
 import Data.Word(Word8, Word16)
-import Language.Java.Class.Attribute(AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute)
-import Language.Java.Class.Method(AsMethodErrorAttributeError(_MethodErrorAttributeError), AsMethodNameIndexUnexpectedEof(_MethodNameIndexUnexpectedEof), AsMethodDescriptorIndexUnexpectedEof(_MethodDescriptorIndexUnexpectedEof), AsMethodAttributeCountUnexpectedEof(_MethodAttributeCountUnexpectedEof), AsMethodAttributeUnexpectedEof(_MethodAttributeUnexpectedEof), AsMethodMethodAccessFlagsError(_MethodMethodAccessFlagsError), Method, MethodError, method)
-import Language.Java.Class.MethodAccessFlags(AsMethodAccessFlagsUnexpectedEof(_MethodAccessFlagsUnexpectedEof))
+import Language.Java.Class.Attribute -- (AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute)
+import Language.Java.Class.Method -- (AsMethodErrorAttributeError(_MethodErrorAttributeError), AsMethodNameIndexUnexpectedEof(_MethodNameIndexUnexpectedEof), AsMethodDescriptorIndexUnexpectedEof(_MethodDescriptorIndexUnexpectedEof), AsMethodAttributeCountUnexpectedEof(_MethodAttributeCountUnexpectedEof), AsMethodAttributeUnexpectedEof(_MethodAttributeUnexpectedEof), AsMethodMethodAccessFlagsError(_MethodMethodAccessFlagsError), Method, MethodError, method)
+import Language.Java.Class.MethodAccessFlags -- (AsMethodAccessFlagsUnexpectedEof(_MethodAccessFlagsUnexpectedEof))
 import Prelude(Show)
 
 -- |
@@ -48,6 +48,8 @@ data MethodsError =
   MethodsInfoUnexpectedEof
   | MethodsMethodError Word16 MethodError
   deriving (Eq, Ord, Show)
+
+{-
 
 class AsMethodsInfoUnexpectedEof p f s where
   _MethodsInfoUnexpectedEof :: 
@@ -134,3 +136,4 @@ methods =
   do c <- methodsInfoUnexpectedEof !- word16be
      i <- (_MethodsMethodError #) !!- replicateO (\n -> ((,) n) !!- method) c
      return (Methods c i)
+-}

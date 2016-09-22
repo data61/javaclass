@@ -5,7 +5,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.ConstantPoolInfo (
+module Language.Java.Class.ConstantPoolInfo {- (
   ConstantPoolInfo(..)
 , AsConstantClass(..)
 , AsFieldRef(..)
@@ -56,7 +56,7 @@ module Language.Java.Class.ConstantPoolInfo (
 , AsConstantPoolInfoInvalidConstantPoolTag(..)
 , constantPoolInfo
 , constantPoolInfo'
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Category((.))
@@ -98,6 +98,32 @@ deriving instance Eq (p Char) => Eq (ConstantPoolInfo p)
 deriving instance Ord (p Char) => Ord (ConstantPoolInfo p)
 deriving instance Show (p Char) => Show (ConstantPoolInfo p)
 
+data ConstantPoolInfoError c =
+  ConstantPoolInfoTagUnexpectedEof
+  | ConstantPoolInfoUtf8LengthUnexpectedEof
+  | ConstantPoolInfoUtf8UnexpectedEof Word16
+  | ConstantPoolInvalidJavaString (c Word8)
+  | ConstantPoolInfoConstantIntegerUnexpectedEof
+  | ConstantPoolInfoConstantFloatUnexpectedEof
+  | ConstantPoolInfoConstantLongUnexpectedEof
+  | ConstantPoolInfoConstantDoubleUnexpectedEof
+  | ConstantPoolInfoConstantClassUnexpectedEof
+  | ConstantPoolInfoConstantStringUnexpectedEof
+  | ConstantPoolInfoFieldRef1UnexpectedEof
+  | ConstantPoolInfoFieldRef2UnexpectedEof
+  | ConstantPoolInfoMethodRef1UnexpectedEof
+  | ConstantPoolInfoMethodRef2UnexpectedEof
+  | ConstantPoolInfoInterfaceMethodRef1UnexpectedEof
+  | ConstantPoolInfoInterfaceMethodRef2UnexpectedEof
+  | ConstantPoolInfoNameAndType1UnexpectedEof
+  | ConstantPoolInfoNameAndType2UnexpectedEof
+  | ConstantPoolInfoInvalidConstantPoolTag Word8
+
+deriving instance Eq (c Word8) => Eq (ConstantPoolInfoError c)
+deriving instance Ord (c Word8) => Ord (ConstantPoolInfoError c)
+deriving instance Show (c Word8) => Show (ConstantPoolInfoError c)
+
+{-
 class AsConstantClass p f s where
   _ConstantClass ::
     Optic' p f s Word16
@@ -229,31 +255,6 @@ instance (Choice p', Applicative f) => AsUtf8 p' f ConstantPoolInfo where
       (\p -> case p of
                Utf8 w1 w2 -> Just (w1, w2)
                _ -> Nothing)
-
-data ConstantPoolInfoError c =
-  ConstantPoolInfoTagUnexpectedEof
-  | ConstantPoolInfoUtf8LengthUnexpectedEof
-  | ConstantPoolInfoUtf8UnexpectedEof Word16
-  | ConstantPoolInvalidJavaString (c Word8)
-  | ConstantPoolInfoConstantIntegerUnexpectedEof
-  | ConstantPoolInfoConstantFloatUnexpectedEof
-  | ConstantPoolInfoConstantLongUnexpectedEof
-  | ConstantPoolInfoConstantDoubleUnexpectedEof
-  | ConstantPoolInfoConstantClassUnexpectedEof
-  | ConstantPoolInfoConstantStringUnexpectedEof
-  | ConstantPoolInfoFieldRef1UnexpectedEof
-  | ConstantPoolInfoFieldRef2UnexpectedEof
-  | ConstantPoolInfoMethodRef1UnexpectedEof
-  | ConstantPoolInfoMethodRef2UnexpectedEof
-  | ConstantPoolInfoInterfaceMethodRef1UnexpectedEof
-  | ConstantPoolInfoInterfaceMethodRef2UnexpectedEof
-  | ConstantPoolInfoNameAndType1UnexpectedEof
-  | ConstantPoolInfoNameAndType2UnexpectedEof
-  | ConstantPoolInfoInvalidConstantPoolTag Word8
-
-deriving instance Eq (c Word8) => Eq (ConstantPoolInfoError c)
-deriving instance Ord (c Word8) => Ord (ConstantPoolInfoError c)
-deriving instance Show (c Word8) => Show (ConstantPoolInfoError c)
 
 class AsConstantPoolInfoTagUnexpectedEof p f s where
   _ConstantPoolInfoTagUnexpectedEof :: 
@@ -762,3 +763,4 @@ constantPoolInfo' f =
             two16 (curry (_NameAndType #)) constantPoolInfoNameAndType1UnexpectedEof constantPoolInfoNameAndType2UnexpectedEof
           _ ->
             fromMaybe (failGet (_ConstantPoolInfoInvalidConstantPoolTag # t)) (f t) 
+-}

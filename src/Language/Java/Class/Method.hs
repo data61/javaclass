@@ -6,7 +6,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.Method(
+module Language.Java.Class.Method {- (
   Method(..)
 , MethodErrorAttributeError(..)
 , AsMethodErrorAttributeError(..)
@@ -20,7 +20,7 @@ module Language.Java.Class.Method(
 , AsMethodAttributeUnexpectedEof(..)
 , AsMethodMethodAccessFlagsError(..)
 , method
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Category((.), id)
@@ -35,8 +35,8 @@ import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle(Get, (!!-), (!-), word16be)
 import Data.Word(Word8, Word16)
-import Language.Java.Class.Attribute(AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute, AttributeError, attribute)
-import Language.Java.Class.MethodAccessFlags(AsMethodAccessFlagsUnexpectedEof(_MethodAccessFlagsUnexpectedEof), MethodAccessFlags, MethodAccessFlagsError, methodAccessFlags)
+import Language.Java.Class.Attribute -- (AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute, AttributeError, attribute)
+import Language.Java.Class.MethodAccessFlags -- (AsMethodAccessFlagsUnexpectedEof(_MethodAccessFlagsUnexpectedEof), MethodAccessFlags, MethodAccessFlagsError, methodAccessFlags)
 import Prelude(Show)
 
 -- |
@@ -58,6 +58,16 @@ newtype MethodErrorAttributeError =
   MethodErrorAttributeError
     AttributeError
   deriving (Eq, Ord, Show)
+
+data MethodError =
+  MethodNameIndexUnexpectedEof
+  | MethodDescriptorIndexUnexpectedEof
+  | MethodAttributeCountUnexpectedEof
+  | MethodAttributeUnexpectedEof Word16 MethodErrorAttributeError
+  | MethodMethodAccessFlagsError MethodAccessFlagsError
+  deriving (Eq, Ord, Show)
+
+{-
 
 class AsMethodErrorAttributeError p f s where
   _MethodErrorAttributeError ::
@@ -84,14 +94,6 @@ instance AsAttributeLengthUnexpectedEof p f MethodErrorAttributeError where
 instance AsAttributeNameIndexUnexpectedEof p f MethodErrorAttributeError where    
   _AttributeNameIndexUnexpectedEof =
     _MethodErrorAttributeError . _AttributeNameIndexUnexpectedEof
-
-data MethodError =
-  MethodNameIndexUnexpectedEof
-  | MethodDescriptorIndexUnexpectedEof
-  | MethodAttributeCountUnexpectedEof
-  | MethodAttributeUnexpectedEof Word16 MethodErrorAttributeError
-  | MethodMethodAccessFlagsError MethodAccessFlagsError
-  deriving (Eq, Ord, Show)
 
 class AsMethodNameIndexUnexpectedEof p f s where
   _MethodNameIndexUnexpectedEof :: 
@@ -209,3 +211,4 @@ method =
      c <- methodAttributeCountUnexpectedEof !- word16be
      a <- (_MethodAttributeUnexpectedEof #) !!- replicateO (\x -> ((,) x) !!- attribute) c
      return (Method f n d c a)
+-}

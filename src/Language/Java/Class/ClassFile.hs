@@ -7,7 +7,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE KindSignatures #-}
 
-module Language.Java.Class.ClassFile(
+module Language.Java.Class.ClassFile {- (
   ClassFile(..)
 , ClassFile'
 , ClassFileError(..)
@@ -24,7 +24,7 @@ module Language.Java.Class.ClassFile(
 , AsClassFileUnexpectedInputOnStream(..)
 , classFileUnexpectedInputOnStream
 , classFile
-) where
+) -} where
 
 import Control.Applicative
 import Control.Category((.))
@@ -38,21 +38,21 @@ import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle(Get, isEmpty, failGet, (!!-))
 import Data.Word(Word8, Word16)
-import Language.Java.Class.Attribute(AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute)
-import Language.Java.Class.Attributes(AsAttributesInfoUnexpectedEof(_AttributesInfoUnexpectedEof), AsAttributesAttributeError(_AttributesAttributeError), Attributes, AttributesError, attributes)
-import Language.Java.Class.Method(AsMethodNameIndexUnexpectedEof(_MethodNameIndexUnexpectedEof), AsMethodDescriptorIndexUnexpectedEof(_MethodDescriptorIndexUnexpectedEof), AsMethodAttributeCountUnexpectedEof(_MethodAttributeCountUnexpectedEof), AsMethodAttributeUnexpectedEof(_MethodAttributeUnexpectedEof), AsMethodMethodAccessFlagsError(_MethodMethodAccessFlagsError), AsMethodErrorAttributeError(_MethodErrorAttributeError), Method)
-import Language.Java.Class.Methods(AsMethodsInfoUnexpectedEof(_MethodsInfoUnexpectedEof), AsMethodsMethodError(_MethodsMethodError), Methods, MethodsError, methods)
-import Language.Java.Class.Field(AsFieldFieldAccessFlagsError(_FieldFieldAccessFlagsError), AsFieldNameIndexUnexpectedEof(_FieldNameIndexUnexpectedEof), AsFieldDescriptorIndexUnexpectedEof(_FieldDescriptorIndexUnexpectedEof), AsFieldAttributeCountUnexpectedEof(_FieldAttributeCountUnexpectedEof), AsFieldAttributeError(_FieldAttributeError), AsFieldErrorAttributeError(_FieldErrorAttributeError), Field)
-import Language.Java.Class.Fields(AsFieldsFieldInfoUnexpectedEof(_FieldsFieldInfoUnexpectedEof), AsFieldsFieldError(_FieldsFieldError), Fields, FieldsError, fields)
-import Language.Java.Class.Interfaces(AsInterfacesCountUnexpectedEof(_InterfacesCountUnexpectedEof), AsInterfacesUnexpectedEof(_InterfacesUnexpectedEof), Interfaces, InterfacesError, interfaces)
-import Language.Java.Class.SuperClass(AsSuperClassUnexpectedEof(_SuperClassUnexpectedEof), SuperClass, SuperClassError, superClass)
-import Language.Java.Class.ThisClass(AsThisClassUnexpectedEof(_ThisClassUnexpectedEof), ThisClass, ThisClassError, thisClass)
-import Language.Java.Class.ThisAccessFlags(AsThisAccessFlagsUnexpectedEof(_ThisAccessFlagsUnexpectedEof), ThisAccessFlags, ThisAccessFlagsError, thisAccessFlags)
-import Language.Java.Class.ConstantPoolInfo(AsConstantPoolInfoTagUnexpectedEof(_ConstantPoolInfoTagUnexpectedEof), AsConstantPoolInfoUtf8LengthUnexpectedEof(_ConstantPoolInfoUtf8LengthUnexpectedEof), AsConstantPoolInfoUtf8UnexpectedEof(_ConstantPoolInfoUtf8UnexpectedEof), AsConstantPoolInvalidJavaString(_ConstantPoolInvalidJavaString), AsConstantPoolInfoConstantIntegerUnexpectedEof(_ConstantPoolInfoConstantIntegerUnexpectedEof), AsConstantPoolInfoConstantFloatUnexpectedEof(_ConstantPoolInfoConstantFloatUnexpectedEof), AsConstantPoolInfoConstantLongUnexpectedEof(_ConstantPoolInfoConstantLongUnexpectedEof), AsConstantPoolInfoConstantDoubleUnexpectedEof(_ConstantPoolInfoConstantDoubleUnexpectedEof), AsConstantPoolInfoConstantClassUnexpectedEof(_ConstantPoolInfoConstantClassUnexpectedEof), AsConstantPoolInfoConstantStringUnexpectedEof(_ConstantPoolInfoConstantStringUnexpectedEof), AsConstantPoolInfoFieldRef1UnexpectedEof(_ConstantPoolInfoFieldRef1UnexpectedEof), AsConstantPoolInfoFieldRef2UnexpectedEof(_ConstantPoolInfoFieldRef2UnexpectedEof), AsConstantPoolInfoMethodRef1UnexpectedEof(_ConstantPoolInfoMethodRef1UnexpectedEof), AsConstantPoolInfoMethodRef2UnexpectedEof(_ConstantPoolInfoMethodRef2UnexpectedEof), AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof(_ConstantPoolInfoInterfaceMethodRef1UnexpectedEof), AsConstantPoolInfoInterfaceMethodRef2UnexpectedEof(_ConstantPoolInfoInterfaceMethodRef2UnexpectedEof), AsConstantPoolInfoNameAndType1UnexpectedEof(_ConstantPoolInfoNameAndType1UnexpectedEof), AsConstantPoolInfoNameAndType2UnexpectedEof(_ConstantPoolInfoNameAndType2UnexpectedEof), AsConstantPoolInfoInvalidConstantPoolTag(_ConstantPoolInfoInvalidConstantPoolTag), ConstantPoolInfo)
-import Language.Java.Class.MethodAccessFlags(AsMethodAccessFlagsUnexpectedEof(_MethodAccessFlagsUnexpectedEof))
-import Language.Java.Class.ConstantPool(AsConstantPoolCountUnexpectedEof(_ConstantPoolCountUnexpectedEof), AsConstantPoolConstantPoolInfoError(_ConstantPoolConstantPoolInfoError), ConstantPool, ConstantPoolError, constantPool)
-import Language.Java.Class.Cafebabe(AsCafebabeUnexpectedEof(_CafebabeUnexpectedEof), AsCafebabeInvalidMagicNumber(_CafebabeInvalidMagicNumber), CafebabeError, cafebabe)
-import Language.Java.Class.Version(AsVersionMinorUnexpectedEof(_VersionMinorUnexpectedEof), AsVersionMajorUnexpectedEof(_VersionMajorUnexpectedEof), Version, VersionError, version)
+import Language.Java.Class.Attribute -- (AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute)
+import Language.Java.Class.Attributes -- (AsAttributesInfoUnexpectedEof(_AttributesInfoUnexpectedEof), AsAttributesAttributeError(_AttributesAttributeError), Attributes, AttributesError, attributes)
+import Language.Java.Class.Method -- (AsMethodNameIndexUnexpectedEof(_MethodNameIndexUnexpectedEof), AsMethodDescriptorIndexUnexpectedEof(_MethodDescriptorIndexUnexpectedEof), AsMethodAttributeCountUnexpectedEof(_MethodAttributeCountUnexpectedEof), AsMethodAttributeUnexpectedEof(_MethodAttributeUnexpectedEof), AsMethodMethodAccessFlagsError(_MethodMethodAccessFlagsError), AsMethodErrorAttributeError(_MethodErrorAttributeError), Method)
+import Language.Java.Class.Methods -- (AsMethodsInfoUnexpectedEof(_MethodsInfoUnexpectedEof), AsMethodsMethodError(_MethodsMethodError), Methods, MethodsError, methods)
+import Language.Java.Class.Field -- (AsFieldFieldAccessFlagsError(_FieldFieldAccessFlagsError), AsFieldNameIndexUnexpectedEof(_FieldNameIndexUnexpectedEof), AsFieldDescriptorIndexUnexpectedEof(_FieldDescriptorIndexUnexpectedEof), AsFieldAttributeCountUnexpectedEof(_FieldAttributeCountUnexpectedEof), AsFieldAttributeError(_FieldAttributeError), AsFieldErrorAttributeError(_FieldErrorAttributeError), Field)
+import Language.Java.Class.Fields -- (AsFieldsFieldInfoUnexpectedEof(_FieldsFieldInfoUnexpectedEof), AsFieldsFieldError(_FieldsFieldError), Fields, FieldsError, fields)
+import Language.Java.Class.Interfaces -- (AsInterfacesCountUnexpectedEof(_InterfacesCountUnexpectedEof), AsInterfacesUnexpectedEof(_InterfacesUnexpectedEof), Interfaces, InterfacesError, interfaces)
+import Language.Java.Class.SuperClass -- (AsSuperClassUnexpectedEof(_SuperClassUnexpectedEof), SuperClass, SuperClassError, superClass)
+import Language.Java.Class.ThisClass -- (AsThisClassUnexpectedEof(_ThisClassUnexpectedEof), ThisClass, ThisClassError, thisClass)
+import Language.Java.Class.ThisAccessFlags -- (AsThisAccessFlagsUnexpectedEof(_ThisAccessFlagsUnexpectedEof), ThisAccessFlags, ThisAccessFlagsError, thisAccessFlags)
+import Language.Java.Class.ConstantPoolInfo -- (AsConstantPoolInfoTagUnexpectedEof(_ConstantPoolInfoTagUnexpectedEof), AsConstantPoolInfoUtf8LengthUnexpectedEof(_ConstantPoolInfoUtf8LengthUnexpectedEof), AsConstantPoolInfoUtf8UnexpectedEof(_ConstantPoolInfoUtf8UnexpectedEof), AsConstantPoolInvalidJavaString(_ConstantPoolInvalidJavaString), AsConstantPoolInfoConstantIntegerUnexpectedEof(_ConstantPoolInfoConstantIntegerUnexpectedEof), AsConstantPoolInfoConstantFloatUnexpectedEof(_ConstantPoolInfoConstantFloatUnexpectedEof), AsConstantPoolInfoConstantLongUnexpectedEof(_ConstantPoolInfoConstantLongUnexpectedEof), AsConstantPoolInfoConstantDoubleUnexpectedEof(_ConstantPoolInfoConstantDoubleUnexpectedEof), AsConstantPoolInfoConstantClassUnexpectedEof(_ConstantPoolInfoConstantClassUnexpectedEof), AsConstantPoolInfoConstantStringUnexpectedEof(_ConstantPoolInfoConstantStringUnexpectedEof), AsConstantPoolInfoFieldRef1UnexpectedEof(_ConstantPoolInfoFieldRef1UnexpectedEof), AsConstantPoolInfoFieldRef2UnexpectedEof(_ConstantPoolInfoFieldRef2UnexpectedEof), AsConstantPoolInfoMethodRef1UnexpectedEof(_ConstantPoolInfoMethodRef1UnexpectedEof), AsConstantPoolInfoMethodRef2UnexpectedEof(_ConstantPoolInfoMethodRef2UnexpectedEof), AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof(_ConstantPoolInfoInterfaceMethodRef1UnexpectedEof), AsConstantPoolInfoInterfaceMethodRef2UnexpectedEof(_ConstantPoolInfoInterfaceMethodRef2UnexpectedEof), AsConstantPoolInfoNameAndType1UnexpectedEof(_ConstantPoolInfoNameAndType1UnexpectedEof), AsConstantPoolInfoNameAndType2UnexpectedEof(_ConstantPoolInfoNameAndType2UnexpectedEof), AsConstantPoolInfoInvalidConstantPoolTag(_ConstantPoolInfoInvalidConstantPoolTag), ConstantPoolInfo)
+import Language.Java.Class.MethodAccessFlags -- (AsMethodAccessFlagsUnexpectedEof(_MethodAccessFlagsUnexpectedEof))
+import Language.Java.Class.ConstantPool -- (AsConstantPoolCountUnexpectedEof(_ConstantPoolCountUnexpectedEof), AsConstantPoolConstantPoolInfoError(_ConstantPoolConstantPoolInfoError), ConstantPool, ConstantPoolError, constantPool)
+import Language.Java.Class.Cafebabe -- (AsCafebabeUnexpectedEof(_CafebabeUnexpectedEof), AsCafebabeInvalidMagicNumber(_CafebabeInvalidMagicNumber), CafebabeError, cafebabe)
+import Language.Java.Class.Version -- (AsVersionMinorUnexpectedEof(_VersionMinorUnexpectedEof), AsVersionMajorUnexpectedEof(_VersionMajorUnexpectedEof), Version, VersionError, version)
 import Prelude(Show)
 
 -- |
@@ -94,6 +94,7 @@ deriving instance Eq (ConstantPoolError c) => Eq (ClassFileError c)
 deriving instance Ord (ConstantPoolError c) => Ord (ClassFileError c)
 deriving instance Show (ConstantPoolError c) => Show (ClassFileError c)
 
+{-
 class AsClassFileCafebabeError p f s where
   _ClassFileCafebabeError :: 
     Optic' p f s CafebabeError
@@ -499,3 +500,4 @@ classFile =
          return (ClassFile v p a t s i f m b)
        else
          failGet classFileUnexpectedInputOnStream
+-}

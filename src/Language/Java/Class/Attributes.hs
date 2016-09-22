@@ -6,14 +6,14 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.Attributes(
+module Language.Java.Class.Attributes {- (
   Attributes(..)
 , AttributesError(..)
 , AsAttributesInfoUnexpectedEof(..)
 , attributesInfoUnexpectedEof
 , AsAttributesAttributeError(..)
 , attributes
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Category((.))
@@ -26,7 +26,7 @@ import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle(Get, word16be, (!!-), (!-))
 import Data.Word(Word8, Word16)
-import Language.Java.Class.Attribute(AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute, AttributeError, attribute)
+import Language.Java.Class.Attribute -- (AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute, AttributeError, attribute)
 import Prelude(Show)
 
 -- |
@@ -46,6 +46,7 @@ data AttributesError =
   | AttributesAttributeError Word16 AttributeError
   deriving (Eq, Ord, Show)
 
+{-
 class AsAttributesInfoUnexpectedEof p f s where
   _AttributesInfoUnexpectedEof :: 
     Optic' p f s ()
@@ -100,3 +101,4 @@ attributes =
   do c <- attributesInfoUnexpectedEof !- word16be
      i <- (_AttributesAttributeError #) !!- replicateO (\n -> ((,) n) !!- attribute) c
      return (Attributes c i)
+-}

@@ -6,14 +6,14 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.Fields(
+module Language.Java.Class.Fields {- (
   Fields(..)
 , FieldsError(..)
 , AsFieldsFieldInfoUnexpectedEof(..)
 , fieldsFieldInfoUnexpectedEof
 , AsFieldsFieldError(..)
 , fields
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Category((.))
@@ -27,8 +27,8 @@ import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle(Get, (!!-), (!-), word16be)
 import Data.Word(Word8, Word16)
-import Language.Java.Class.Attribute(AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute)
-import Language.Java.Class.Field(AsFieldErrorAttributeError(_FieldErrorAttributeError), AsFieldFieldAccessFlagsError(_FieldFieldAccessFlagsError), AsFieldNameIndexUnexpectedEof(_FieldNameIndexUnexpectedEof), AsFieldDescriptorIndexUnexpectedEof(_FieldDescriptorIndexUnexpectedEof), AsFieldAttributeCountUnexpectedEof(_FieldAttributeCountUnexpectedEof), AsFieldAttributeError(_FieldAttributeError), Field, FieldError, field)
+import Language.Java.Class.Attribute -- (AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute)
+import Language.Java.Class.Field -- (AsFieldErrorAttributeError(_FieldErrorAttributeError), AsFieldFieldAccessFlagsError(_FieldFieldAccessFlagsError), AsFieldNameIndexUnexpectedEof(_FieldNameIndexUnexpectedEof), AsFieldDescriptorIndexUnexpectedEof(_FieldDescriptorIndexUnexpectedEof), AsFieldAttributeCountUnexpectedEof(_FieldAttributeCountUnexpectedEof), AsFieldAttributeError(_FieldAttributeError), Field, FieldError, field)
 import Prelude(Show)
 
 -- |
@@ -48,6 +48,7 @@ data FieldsError =
   | FieldsFieldError Word16 FieldError
   deriving (Eq, Ord, Show)
 
+{-
 class AsFieldsFieldInfoUnexpectedEof p f s where
   _FieldsFieldInfoUnexpectedEof :: 
     Optic' p f s ()
@@ -128,3 +129,4 @@ fields =
   do c <- fieldsFieldInfoUnexpectedEof !- word16be
      i <- (_FieldsFieldError #) !!- replicateO (\n -> ((,) n) !!- field) c
      return (Fields c i)
+-}

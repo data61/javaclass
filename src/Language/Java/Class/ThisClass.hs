@@ -3,13 +3,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Language.Java.Class.ThisClass(
+module Language.Java.Class.ThisClass {- (
   ThisClass(..)
 , ThisClassError(..)
 , AsThisClassUnexpectedEof(..)
 , thisClassUnexpectedEof
 , thisClass
-) where
+) -} where
 
 import Control.Lens(Optic', Profunctor, iso, ( # ))
 import Control.Monad(return)
@@ -33,6 +33,7 @@ data ThisClassError =
   ThisClassUnexpectedEof
   deriving (Eq, Ord, Show)
 
+{-
 class AsThisClassUnexpectedEof p f s where
   _ThisClassUnexpectedEof :: 
     Optic' p f s ()
@@ -55,3 +56,4 @@ thisClass ::
 thisClass =
   do af <- thisClassUnexpectedEof !- word16be
      return (ThisClass af)
+-}

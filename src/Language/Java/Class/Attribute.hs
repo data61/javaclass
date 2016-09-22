@@ -5,7 +5,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.Attribute(
+module Language.Java.Class.Attribute {-(
   Attribute(..)
 , AttributeError(..)
 , AsAttributeNameIndexUnexpectedEof(..)
@@ -14,7 +14,7 @@ module Language.Java.Class.Attribute(
 , attributeLengthUnexpectedEof
 , AsAttributeUnexpectedEof(..)
 , attribute
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Lens(AsEmpty, Cons, Optic', Choice, prism', ( # ))
@@ -48,6 +48,7 @@ data AttributeError =
   | AttributeUnexpectedEof Word32
   deriving (Eq, Ord, Show)
 
+{-
 class AsAttributeNameIndexUnexpectedEof p f s where
   _AttributeNameIndexUnexpectedEof :: 
     Optic' p f s ()
@@ -107,3 +108,4 @@ attribute =
      l <- attributeLengthUnexpectedEof !- word32be
      a <- replicateO (\x -> _AttributeUnexpectedEof # x !- word8) l
      return (Attribute n l a)
+-}

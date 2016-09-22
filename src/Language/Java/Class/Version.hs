@@ -3,7 +3,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Language.Java.Class.Version(
+module Language.Java.Class.Version {-(
   Version(..)
 , VersionError(..)
 , AsVersionMinorUnexpectedEof(..)
@@ -11,7 +11,7 @@ module Language.Java.Class.Version(
 , AsVersionMajorUnexpectedEof(..)
 , versionMajorUnexpectedEof
 , version
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Lens(Choice, Optic', prism', ( # ))
@@ -39,6 +39,7 @@ data VersionError =
   | VersionMajorUnexpectedEof
   deriving (Eq, Ord, Show)
 
+{-
 class AsVersionMinorUnexpectedEof p f s where
   _VersionMinorUnexpectedEof :: 
     Optic' p f s ()
@@ -82,3 +83,4 @@ version =
   do mn <- versionMinorUnexpectedEof !- word16be
      mj <- versionMajorUnexpectedEof !- word16be
      return (Version mn mj)
+-}

@@ -3,13 +3,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Language.Java.Class.ThisAccessFlags(
+module Language.Java.Class.ThisAccessFlags {- (
   ThisAccessFlags(..)
 , ThisAccessFlagsError(..)
 , AsThisAccessFlagsUnexpectedEof(..)
 , thisAccessFlagsUnexpectedEof
 , thisAccessFlags
-) where
+) -} where
 
 import Control.Lens(Optic', Profunctor, iso, ( # ))
 import Control.Monad(return)
@@ -33,6 +33,7 @@ data ThisAccessFlagsError =
   ThisAccessFlagsUnexpectedEof
   deriving (Eq, Ord, Show)
 
+{-
 class AsThisAccessFlagsUnexpectedEof p f s where
   _ThisAccessFlagsUnexpectedEof :: 
     Optic' p f s ()
@@ -55,3 +56,4 @@ thisAccessFlags ::
 thisAccessFlags =
   do af <- thisAccessFlagsUnexpectedEof !- word16be
      return (ThisAccessFlags af)
+-}

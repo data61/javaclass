@@ -3,13 +3,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Language.Java.Class.SuperClass(
+module Language.Java.Class.SuperClass {- (
   SuperClass(..)
 , SuperClassError(..)
 , AsSuperClassUnexpectedEof(..)
 , superClassUnexpectedEof
 , superClass
-) where
+) -} where
 
 import Control.Lens(Optic', Profunctor, iso, ( # ))
 import Control.Monad(Monad(return))
@@ -33,6 +33,7 @@ data SuperClassError =
   SuperClassUnexpectedEof
   deriving (Eq, Ord, Show)
 
+{-
 class AsSuperClassUnexpectedEof p f s where
   _SuperClassUnexpectedEof :: 
     Optic' p f s ()
@@ -55,3 +56,4 @@ superClass ::
 superClass =
   do af <- superClassUnexpectedEof !- word16be
      return (SuperClass af)
+-}

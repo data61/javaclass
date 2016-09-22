@@ -6,7 +6,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.Field(
+module Language.Java.Class.Field {- (
   Field(..)
 , FieldErrorAttributeError(..)
 , AsFieldErrorAttributeError(..)
@@ -20,7 +20,7 @@ module Language.Java.Class.Field(
 , fieldAttributeCountUnexpectedEof
 , AsFieldAttributeError(..)
 , field
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Category((.), id)
@@ -35,7 +35,7 @@ import Data.Ord(Ord)
 import Data.Tagged(Tagged)
 import Data.Tickle(Get, (!!-), (!-), word16be)
 import Data.Word(Word8, Word16)
-import Language.Java.Class.Attribute(AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute, AttributeError, attribute)
+import Language.Java.Class.Attribute -- (AsAttributeNameIndexUnexpectedEof(_AttributeNameIndexUnexpectedEof), AsAttributeLengthUnexpectedEof(_AttributeLengthUnexpectedEof), AsAttributeUnexpectedEof(_AttributeUnexpectedEof), Attribute, AttributeError, attribute)
 import Language.Java.Class.FieldAccessFlags
 import Prelude(Show)
 
@@ -59,6 +59,16 @@ newtype FieldErrorAttributeError =
     AttributeError
   deriving (Eq, Ord, Show)
 
+
+data FieldError =
+  FieldFieldAccessFlagsError FieldAccessFlagsError 
+  | FieldNameIndexUnexpectedEof
+  | FieldDescriptorIndexUnexpectedEof
+  | FieldAttributeCountUnexpectedEof
+  | FieldAttributeError Word16 FieldErrorAttributeError
+  deriving (Eq, Ord, Show)
+
+{-
 class AsFieldErrorAttributeError p f s where
   _FieldErrorAttributeError ::
     Optic' p f s FieldErrorAttributeError
@@ -84,14 +94,6 @@ instance AsAttributeLengthUnexpectedEof p f FieldErrorAttributeError where
 instance AsAttributeNameIndexUnexpectedEof p f FieldErrorAttributeError where    
   _AttributeNameIndexUnexpectedEof =
     _FieldErrorAttributeError . _AttributeNameIndexUnexpectedEof
-
-data FieldError =
-  FieldFieldAccessFlagsError FieldAccessFlagsError 
-  | FieldNameIndexUnexpectedEof
-  | FieldDescriptorIndexUnexpectedEof
-  | FieldAttributeCountUnexpectedEof
-  | FieldAttributeError Word16 FieldErrorAttributeError
-  deriving (Eq, Ord, Show)
 
 class AsFieldFieldAccessFlagsError p f s where
   _FieldFieldAccessFlagsError :: 
@@ -205,3 +207,4 @@ field =
      c <- fieldAttributeCountUnexpectedEof !- word16be
      a <- replicateO (\x -> (\w -> _FieldAttributeError # (x, w)) !!- attribute) c
      return (Field f n d c a)
+-}

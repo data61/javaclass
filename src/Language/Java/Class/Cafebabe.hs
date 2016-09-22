@@ -3,13 +3,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Language.Java.Class.Cafebabe(
+module Language.Java.Class.Cafebabe {- (
   CafebabeError(..)
 , AsCafebabeUnexpectedEof(..)
 , cafebabeUnexpectedEof
 , AsCafebabeInvalidMagicNumber(..)
 , cafebabe
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Lens(Optic', Choice, prism', ( # ))
@@ -28,6 +28,7 @@ data CafebabeError =
   | CafebabeInvalidMagicNumber Word32
   deriving (Eq, Ord, Show)
 
+{-
 class AsCafebabeUnexpectedEof p f s where
   _CafebabeUnexpectedEof :: 
     Optic' p f s ()
@@ -68,3 +69,4 @@ cafebabe =
          return ()
        else
          failGet (_CafebabeInvalidMagicNumber # c)         
+-}

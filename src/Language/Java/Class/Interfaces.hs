@@ -5,14 +5,14 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Language.Java.Class.Interfaces(
+module Language.Java.Class.Interfaces {- (
   Interfaces(..)
 , InterfacesError(..)
 , AsInterfacesCountUnexpectedEof(..)
 , interfacesCountUnexpectedEof
 , AsInterfacesUnexpectedEof(..)
 , interfaces
-) where
+) -} where
 
 import Control.Applicative(Applicative)
 import Control.Lens(Optic', Choice, AsEmpty, Cons, prism', ( # ))
@@ -43,6 +43,8 @@ data InterfacesError =
   InterfacesCountUnexpectedEof
   | InterfacesUnexpectedEof Word16
   deriving (Eq, Ord, Show)
+
+{-
 
 class AsInterfacesCountUnexpectedEof p f s where
   _InterfacesCountUnexpectedEof :: 
@@ -83,3 +85,4 @@ interfaces =
   do c <- interfacesCountUnexpectedEof !- word16be
      i <- replicateO (\n -> _InterfacesUnexpectedEof # n !- word16be) c
      return (Interfaces c i)
+-}
