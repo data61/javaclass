@@ -38,6 +38,7 @@ library
                     , tickle >= 0.0.6 && < 0.1
                     , tagged >= 0.8 && < 0.9
                     , greplicate >= 0.0.2 && < 0.1
+                    , papa
                     
   ghc-options:
                     -Wall
