@@ -75,7 +75,7 @@ getAttribute ::
   (AsAttributeError e, Cons (a Word8) (a Word8) Word8 Word8, AsEmpty (a Word8)) =>
   Get e (Attribute a)
 getAttribute =
-  do n <- attributeNameIndexUnexpectedEof !- word16be
-     l <- attributeLengthUnexpectedEof !- word32be
-     a <- replicateO (\x -> _AttributeUnexpectedEof # x !- word8) l
-     return (Attribute n l a)
+  do  n <- attributeNameIndexUnexpectedEof !- word16be
+      l <- attributeLengthUnexpectedEof !- word32be
+      a <- replicateO (\x -> _AttributeUnexpectedEof # x !- word8) l
+      return (Attribute n l a)

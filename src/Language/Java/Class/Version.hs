@@ -54,6 +54,6 @@ getVersion ::
   AsVersionError e =>
   Get e Version
 getVersion =
-  do mn <- versionMinorUnexpectedEof !- word16be
-     mj <- versionMajorUnexpectedEof !- word16be
-     return (Version mn mj)
+  do  mn <- versionMinorUnexpectedEof !- word16be
+      mj <- versionMajorUnexpectedEof !- word16be
+      return (Version mn mj)

@@ -68,6 +68,6 @@ getAttributes ::
   Get e (Attributes a1 s)
 
 getAttributes =
-  do c <- attributesInfoUnexpectedEof !- word16be
-     i <- (_AttributesAttributeError #) !!- replicateO (\n -> ((,) n) !!- getAttribute) c
-     return (Attributes c i)
+  do  c <- attributesInfoUnexpectedEof !- word16be
+      i <- (_AttributesAttributeError #) !!- replicateO (\n -> ((,) n) !!- getAttribute) c
+      return (Attributes c i)
