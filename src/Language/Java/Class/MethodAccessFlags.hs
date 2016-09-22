@@ -2,25 +2,20 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Language.Java.Class.MethodAccessFlags(
   MethodAccessFlags(..)
+, HasMethodAccessFlags(..)
 , MethodAccessFlagsError(..)
-, AsMethodAccessFlagsUnexpectedEof(..)
-, methodAccessFlagsUnexpectedEof
-, methodAccessFlags
+, HasMethodAccessFlagsError(..)
+, getMethodAccessFlags
 ) where
 
-import Control.Lens(Optic', Profunctor, iso, ( # ))
-import Control.Monad(return)
-import Data.Eq(Eq)
-import Data.Functor(Functor)
-import Data.Functor.Identity(Identity)
-import Data.Ord(Ord)
-import Data.Tagged(Tagged)
 import Data.Tickle(Get, (!-), word16be)
 import Data.Word(Word16)
-import Prelude(Show)
+import Papa
 
 -- |
 --
@@ -30,29 +25,27 @@ newtype MethodAccessFlags =
     Word16
   deriving (Eq, Ord, Show)
 
+makeWrapped ''MethodAccessFlags
+makeClassy ''MethodAccessFlags
+
 data MethodAccessFlagsError =
   MethodAccessFlagsUnexpectedEof
   deriving (Eq, Ord, Show)
 
-class AsMethodAccessFlagsUnexpectedEof p f s where
-  _MethodAccessFlagsUnexpectedEof :: 
-    Optic' p f s ()
-
-instance (Profunctor p, Functor f) => AsMethodAccessFlagsUnexpectedEof p f MethodAccessFlagsError where
-  _MethodAccessFlagsUnexpectedEof =
+instance Wrapped MethodAccessFlagsError where
+  type Unwrapped MethodAccessFlagsError = ()
+  _Wrapped' =
     iso
       (\_ -> ())
-      (\() -> MethodAccessFlagsUnexpectedEof)
+      (\_ -> MethodAccessFlagsUnexpectedEof)
 
-methodAccessFlagsUnexpectedEof ::
-  AsMethodAccessFlagsUnexpectedEof Tagged Identity t =>
-  t
-methodAccessFlagsUnexpectedEof =
-  _MethodAccessFlagsUnexpectedEof # ()
+instance Rewrapped MethodAccessFlagsError MethodAccessFlagsError
 
-methodAccessFlags ::
-  AsMethodAccessFlagsUnexpectedEof Tagged Identity e =>
+makeClassy ''MethodAccessFlagsError
+
+getMethodAccessFlags ::
+  (Unwrapped e ~ (), Rewrapped e e) =>
   Get e MethodAccessFlags
-methodAccessFlags =
-  do af <- methodAccessFlagsUnexpectedEof !- word16be
-     return (MethodAccessFlags af)
+getMethodAccessFlags =
+  do  af <- _Wrapped # () !- word16be
+      return (MethodAccessFlags af)

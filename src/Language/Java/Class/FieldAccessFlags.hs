@@ -2,25 +2,20 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Language.Java.Class.FieldAccessFlags(
   FieldAccessFlags(..)
+, HasFieldAccessFlags(..)
 , FieldAccessFlagsError(..)
-, AsFieldAccessFlagsUnexpectedEof(..)
-, fieldAccessFlagsUnexpectedEof
-, fieldAccessFlags
+, HasFieldAccessFlagsError(..)
+, getFieldAccessFlags
 ) where
 
-import Control.Lens(Optic', Profunctor, iso, ( # ))
-import Control.Monad(return)
-import Data.Eq(Eq)
-import Data.Functor(Functor)
-import Data.Functor.Identity(Identity)
-import Data.Ord(Ord)
-import Data.Tagged(Tagged)
 import Data.Tickle(Get, (!-), word16be)
 import Data.Word(Word16)
-import Prelude(Show)
+import Papa
 
 -- |
 --
@@ -30,29 +25,27 @@ newtype FieldAccessFlags =
     Word16
   deriving (Eq, Ord, Show)
 
+makeWrapped ''FieldAccessFlags
+makeClassy ''FieldAccessFlags
+
 data FieldAccessFlagsError =
   FieldAccessFlagsUnexpectedEof
   deriving (Eq, Ord, Show)
 
-class AsFieldAccessFlagsUnexpectedEof p f s where
-  _FieldAccessFlagsUnexpectedEof :: 
-    Optic' p f s ()
-
-instance (Profunctor p, Functor f) => AsFieldAccessFlagsUnexpectedEof p f FieldAccessFlagsError where
-  _FieldAccessFlagsUnexpectedEof =
+instance Wrapped FieldAccessFlagsError where
+  type Unwrapped FieldAccessFlagsError = ()
+  _Wrapped' =
     iso
       (\_ -> ())
-      (\() -> FieldAccessFlagsUnexpectedEof)
+      (\_ -> FieldAccessFlagsUnexpectedEof)
 
-fieldAccessFlagsUnexpectedEof ::
-  AsFieldAccessFlagsUnexpectedEof Tagged Identity t =>
-  t
-fieldAccessFlagsUnexpectedEof =
-  _FieldAccessFlagsUnexpectedEof # ()
+instance Rewrapped FieldAccessFlagsError FieldAccessFlagsError
 
-fieldAccessFlags ::
-  AsFieldAccessFlagsUnexpectedEof Tagged Identity e =>
+makeClassy ''FieldAccessFlagsError
+
+getFieldAccessFlags ::
+  (Unwrapped e ~ (), Rewrapped e e) =>
   Get e FieldAccessFlags
-fieldAccessFlags =
-  do af <- fieldAccessFlagsUnexpectedEof !- word16be
-     return (FieldAccessFlags af)
+getFieldAccessFlags =
+  do  af <- _Wrapped # () !- word16be
+      return (FieldAccessFlags af)  

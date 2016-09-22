@@ -2,25 +2,20 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Language.Java.Class.ThisAccessFlags(
   ThisAccessFlags(..)
+, HasThisAccessFlags(..)
 , ThisAccessFlagsError(..)
-, AsThisAccessFlagsUnexpectedEof(..)
-, thisAccessFlagsUnexpectedEof
-, thisAccessFlags
+, HasThisAccessFlagsError(..)
+, getThisAccessFlags
 ) where
 
-import Control.Lens(Optic', Profunctor, iso, ( # ))
-import Control.Monad(return)
-import Data.Eq(Eq)
-import Data.Functor(Functor)
-import Data.Functor.Identity(Identity)
-import Data.Ord(Ord)
-import Data.Tagged(Tagged)
 import Data.Tickle(Get, word16be, (!-))
 import Data.Word(Word16)
-import Prelude(Show)
+import Papa
 
 -- |
 --
@@ -29,29 +24,27 @@ newtype ThisAccessFlags =
   ThisAccessFlags Word16
   deriving (Eq, Ord, Show)
 
+makeWrapped ''ThisAccessFlags
+makeClassy ''ThisAccessFlags
+
 data ThisAccessFlagsError =
   ThisAccessFlagsUnexpectedEof
   deriving (Eq, Ord, Show)
 
-class AsThisAccessFlagsUnexpectedEof p f s where
-  _ThisAccessFlagsUnexpectedEof :: 
-    Optic' p f s ()
-
-instance (Profunctor p, Functor f) => AsThisAccessFlagsUnexpectedEof p f ThisAccessFlagsError where
-  _ThisAccessFlagsUnexpectedEof =
+instance Wrapped ThisAccessFlagsError where
+  type Unwrapped ThisAccessFlagsError = ()
+  _Wrapped' =
     iso
       (\_ -> ())
-      (\() -> ThisAccessFlagsUnexpectedEof)
+      (\_ -> ThisAccessFlagsUnexpectedEof)
 
-thisAccessFlagsUnexpectedEof ::
-  AsThisAccessFlagsUnexpectedEof Tagged Identity t =>
-  t
-thisAccessFlagsUnexpectedEof =
-  _ThisAccessFlagsUnexpectedEof # ()
+instance Rewrapped ThisAccessFlagsError ThisAccessFlagsError
 
-thisAccessFlags ::
-  AsThisAccessFlagsUnexpectedEof Tagged Identity e =>
+makeClassy ''ThisAccessFlagsError
+
+getThisAccessFlags ::
+  (Unwrapped e ~ (), Rewrapped e e) =>
   Get e ThisAccessFlags
-thisAccessFlags =
-  do af <- thisAccessFlagsUnexpectedEof !- word16be
-     return (ThisAccessFlags af)
+getThisAccessFlags =
+  do  af <- _Wrapped # () !- word16be
+      return (ThisAccessFlags af)

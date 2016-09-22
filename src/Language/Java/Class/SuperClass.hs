@@ -2,25 +2,20 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Language.Java.Class.SuperClass(
   SuperClass(..)
+, HasSuperClass(..)
 , SuperClassError(..)
-, AsSuperClassUnexpectedEof(..)
-, superClassUnexpectedEof
-, superClass
+, HasSuperClassError(..)
+, getSuperClass
 ) where
 
-import Control.Lens(Optic', Profunctor, iso, ( # ))
-import Control.Monad(Monad(return))
-import Data.Eq(Eq)
-import Data.Functor(Functor)
-import Data.Functor.Identity(Identity)
-import Data.Ord(Ord)
-import Data.Tagged(Tagged)
 import Data.Tickle((!-), Get, word16be)
 import Data.Word(Word16)
-import Prelude(Show)
+import Papa
 
 -- |
 --
@@ -29,29 +24,27 @@ newtype SuperClass =
   SuperClass Word16
   deriving (Eq, Ord, Show)
 
+makeWrapped ''SuperClass
+makeClassy ''SuperClass
+
 data SuperClassError =
   SuperClassUnexpectedEof
   deriving (Eq, Ord, Show)
 
-class AsSuperClassUnexpectedEof p f s where
-  _SuperClassUnexpectedEof :: 
-    Optic' p f s ()
-
-instance (Profunctor p, Functor f) => AsSuperClassUnexpectedEof p f SuperClassError where
-  _SuperClassUnexpectedEof =
+instance Wrapped SuperClassError where
+  type Unwrapped SuperClassError = ()
+  _Wrapped' =
     iso
       (\_ -> ())
-      (\() -> SuperClassUnexpectedEof)
+      (\_ -> SuperClassUnexpectedEof)
 
-superClassUnexpectedEof ::
-  AsSuperClassUnexpectedEof Tagged Identity t =>
-  t
-superClassUnexpectedEof =
-  _SuperClassUnexpectedEof # ()
+instance Rewrapped SuperClassError SuperClassError
 
-superClass ::
-  AsSuperClassUnexpectedEof Tagged Identity e =>
+makeClassy ''SuperClassError
+
+getSuperClass ::
+  (Unwrapped e ~ (), Rewrapped e e) =>
   Get e SuperClass
-superClass =
-  do af <- superClassUnexpectedEof !- word16be
-     return (SuperClass af)
+getSuperClass =
+  do  af <- _Wrapped # () !- word16be
+      return (SuperClass af)
