@@ -8,7 +8,6 @@
 module Language.Java.Class.FieldAccessFlags(
   FieldAccessFlags(..)
 , FieldAccessFlagsError(..)
-, fieldAccessFlagsUnexpectedEof
 , getFieldAccessFlags
 ) where
 
@@ -39,15 +38,9 @@ instance Wrapped FieldAccessFlagsError where
 
 instance Rewrapped FieldAccessFlagsError FieldAccessFlagsError
 
-fieldAccessFlagsUnexpectedEof ::
-  (Unwrapped t ~ (), Rewrapped t t) =>
-  t
-fieldAccessFlagsUnexpectedEof =
-  _Wrapped # ()
-
 getFieldAccessFlags ::
   (Unwrapped e ~ (), Rewrapped e e) =>
   Get e FieldAccessFlags
 getFieldAccessFlags =
-  do  af <- fieldAccessFlagsUnexpectedEof !- word16be
+  do  af <- _Wrapped # () !- word16be
       return (FieldAccessFlags af)  

@@ -8,7 +8,6 @@
 module Language.Java.Class.SuperClass(
   SuperClass(..)
 , SuperClassError(..)
-, superClassUnexpectedEof
 , getSuperClass
 ) where
 
@@ -38,15 +37,9 @@ instance Wrapped SuperClassError where
 
 instance Rewrapped SuperClassError SuperClassError
 
-superClassUnexpectedEof ::
-  (Unwrapped t ~ (), Rewrapped t t) =>
-  t
-superClassUnexpectedEof =
-  _Wrapped # ()
-
 getSuperClass ::
   (Unwrapped e ~ (), Rewrapped e e) =>
   Get e SuperClass
 getSuperClass =
-  do  af <- superClassUnexpectedEof !- word16be
+  do  af <- _Wrapped # () !- word16be
       return (SuperClass af)

@@ -13,8 +13,6 @@ module Language.Java.Class.Interfaces(
 , InterfacesError(..)
 , HasInterfacesError(..)
 , AsInterfacesError(..)
-, interfacesCountUnexpectedEof
-, interfacesUnexpectedEof
 , getInterfaces
 ) where
 
@@ -45,23 +43,10 @@ data InterfacesError =
 makeClassy ''InterfacesError
 makeClassyPrisms ''InterfacesError
 
-interfacesCountUnexpectedEof ::
-  AsInterfacesError t =>
-  t
-interfacesCountUnexpectedEof =
-  _InterfacesCountUnexpectedEof # ()
-
-interfacesUnexpectedEof ::
-  AsInterfacesError t =>
-  Word16
-  -> t
-interfacesUnexpectedEof w =
-  _InterfacesUnexpectedEof # w
-
 getInterfaces ::
   (AsInterfacesError e, Cons (i Word16) (i Word16) Word16 Word16, AsEmpty (i Word16)) =>
   Get e (Interfaces i)
 getInterfaces =
-  do c <- interfacesCountUnexpectedEof !- word16be
+  do c <- _InterfacesCountUnexpectedEof # () !- word16be
      i <- replicateO (\n -> _InterfacesUnexpectedEof # n !- word16be) c
      return (Interfaces c i)

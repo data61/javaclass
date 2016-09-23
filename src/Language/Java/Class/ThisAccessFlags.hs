@@ -8,7 +8,6 @@
 module Language.Java.Class.ThisAccessFlags(
   ThisAccessFlags(..)
 , ThisAccessFlagsError(..)
-, thisAccessFlagsUnexpectedEof
 , getThisAccessFlags
 ) where
 
@@ -38,15 +37,9 @@ instance Wrapped ThisAccessFlagsError where
 
 instance Rewrapped ThisAccessFlagsError ThisAccessFlagsError
 
-thisAccessFlagsUnexpectedEof ::
-  (Unwrapped t ~ (), Rewrapped t t) =>
-  t
-thisAccessFlagsUnexpectedEof =
-  _Wrapped # ()
-
 getThisAccessFlags ::
   (Unwrapped e ~ (), Rewrapped e e) =>
   Get e ThisAccessFlags
 getThisAccessFlags =
-  do  af <- thisAccessFlagsUnexpectedEof !- word16be
+  do  af <- _Wrapped # () !- word16be
       return (ThisAccessFlags af)

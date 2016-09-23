@@ -8,7 +8,6 @@
 module Language.Java.Class.ThisClass(
   ThisClass(..)
 , ThisClassError(..)
-, thisClassUnexpectedEof
 , getThisClass
 ) where
 
@@ -38,15 +37,9 @@ instance Wrapped ThisClassError where
 
 instance Rewrapped ThisClassError ThisClassError
 
-thisClassUnexpectedEof ::
-  (Unwrapped t ~ (), Rewrapped t t) =>
-  t
-thisClassUnexpectedEof =
-  _Wrapped # ()
-
 getThisClass ::
   (Unwrapped e ~ (), Rewrapped e e) =>
   Get e ThisClass
 getThisClass =
-  do  af <- thisClassUnexpectedEof !- word16be
+  do  af <- _Wrapped # () !- word16be
       return (ThisClass af)

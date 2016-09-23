@@ -16,11 +16,6 @@ module Language.Java.Class.Field(
 , FieldError(..)
 , HasFieldError(..)
 , AsFieldError(..)
-, fieldFieldAccessFlagsError
-, fieldNameIndexUnexpectedEof
-, fieldDescriptorIndexUnexpectedEof
-, fieldAttributeCountUnexpectedEof
-, fieldAttributeError
 , getField
 ) where
 
@@ -76,46 +71,13 @@ data FieldError =
 makeClassy ''FieldError
 makeClassyPrisms ''FieldError
 
-fieldFieldAccessFlagsError ::
-  AsFieldError t =>
-  FieldAccessFlagsError
-  -> t
-fieldFieldAccessFlagsError e =
-  _FieldFieldAccessFlagsError # e
-
-fieldNameIndexUnexpectedEof ::
-  AsFieldError t =>
-  t
-fieldNameIndexUnexpectedEof =
-  _FieldNameIndexUnexpectedEof # ()
-        
-fieldDescriptorIndexUnexpectedEof ::
-  AsFieldError t =>
-  t
-fieldDescriptorIndexUnexpectedEof =
-  _FieldDescriptorIndexUnexpectedEof # ()
-
-fieldAttributeCountUnexpectedEof ::
-  AsFieldError t =>
-  t
-fieldAttributeCountUnexpectedEof =
-  _FieldAttributeCountUnexpectedEof # ()
-        
-fieldAttributeError ::
-  AsFieldError t =>
-  Word16
-  -> FieldErrorAttributeError
-  -> t
-fieldAttributeError w e =
-  _FieldAttributeError # (w, e)
-
 getField ::
   (AsFieldError e, Cons (f (Attribute a1)) (f (Attribute a1)) (Attribute a) (Attribute a), Cons (a Word8) (a Word8) Word8 Word8, AsEmpty (f (Attribute a1)), AsEmpty (a Word8)) =>
   Get e (Field a1 f)
 getField =
   do  f <- (_FieldFieldAccessFlagsError #) !!- getFieldAccessFlags
-      n <- fieldNameIndexUnexpectedEof !- word16be
-      d <- fieldDescriptorIndexUnexpectedEof !- word16be
-      c <- fieldAttributeCountUnexpectedEof !- word16be
+      n <- (_FieldNameIndexUnexpectedEof # ()) !- word16be
+      d <- (_FieldDescriptorIndexUnexpectedEof # ()) !- word16be
+      c <- (_FieldAttributeCountUnexpectedEof # ()) !- word16be
       a <- replicateO (\x -> (\w -> _FieldAttributeError # (x, w)) !!- getAttribute) c
       return (Field f n d c a)

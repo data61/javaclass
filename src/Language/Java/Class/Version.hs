@@ -7,8 +7,6 @@ module Language.Java.Class.Version(
 , VersionError(..)
 , HasVersionError(..)
 , AsVersionError(..)
-, versionMinorUnexpectedEof
-, versionMajorUnexpectedEof
 , getVersion
 ) where
 
@@ -38,22 +36,10 @@ data VersionError =
 makeClassy ''VersionError
 makeClassyPrisms ''VersionError
 
-versionMinorUnexpectedEof ::
-  AsVersionError t =>
-  t
-versionMinorUnexpectedEof =
-  _VersionMinorUnexpectedEof # ()
-
-versionMajorUnexpectedEof ::
-  AsVersionError t =>
-  t
-versionMajorUnexpectedEof =
-  _VersionMajorUnexpectedEof # ()
-
 getVersion ::
   AsVersionError e =>
   Get e Version
 getVersion =
-  do  mn <- versionMinorUnexpectedEof !- word16be
-      mj <- versionMajorUnexpectedEof !- word16be
+  do  mn <- _VersionMinorUnexpectedEof # () !- word16be
+      mj <- _VersionMajorUnexpectedEof # () !- word16be
       return (Version mn mj)

@@ -13,9 +13,6 @@ module Language.Java.Class.Attribute(
 , AttributeError(..)
 , HasAttributeError(..)
 , AsAttributeError(..)
-, attributeUnexpectedEof
-, attributeNameIndexUnexpectedEof
-, attributeLengthUnexpectedEof
 , getAttribute
 ) where
 
@@ -52,30 +49,11 @@ data AttributeError =
 makeClassy ''AttributeError
 makeClassyPrisms ''AttributeError
 
-attributeUnexpectedEof ::
-  AsAttributeError t =>
-  Word32
-  -> t  
-attributeUnexpectedEof =
-  (_AttributeUnexpectedEof #)
-
-attributeNameIndexUnexpectedEof ::
-  AsAttributeError t =>
-  t
-attributeNameIndexUnexpectedEof =
-  _AttributeNameIndexUnexpectedEof # ()
-
-attributeLengthUnexpectedEof ::
-  AsAttributeError t =>
-  t
-attributeLengthUnexpectedEof =
-  _AttributeLengthUnexpectedEof # ()
-     
 getAttribute ::
   (AsAttributeError e, Cons (a Word8) (a Word8) Word8 Word8, AsEmpty (a Word8)) =>
   Get e (Attribute a)
 getAttribute =
-  do  n <- attributeNameIndexUnexpectedEof !- word16be
-      l <- attributeLengthUnexpectedEof !- word32be
+  do  n <- _AttributeNameIndexUnexpectedEof # () !- word16be
+      l <- _AttributeLengthUnexpectedEof # () !- word32be
       a <- replicateO (\x -> _AttributeUnexpectedEof # x !- word8) l
       return (Attribute n l a)

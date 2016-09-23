@@ -4,6 +4,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE FunctionalDependencies #-}
 
 module Language.Java.Class.ConstantPoolInfo {- (
   ConstantPoolInfo(..)
@@ -60,7 +62,7 @@ module Language.Java.Class.ConstantPoolInfo {- (
 
 import Control.Applicative(Applicative)
 import Control.Category((.))
-import Control.Lens(Optic', Choice, Cons, AsEmpty(_Empty), uncons, prism', (<|), ( # ))
+import Control.Lens -- (Optic', Choice, Cons, AsEmpty(_Empty), uncons, prism', (<|), ( # ))
 import Control.Monad(Monad(return, (>>=)))
 import Control.Replicate(replicateO)
 import Data.Bifunctor(bimap)
@@ -98,6 +100,9 @@ deriving instance Eq (p Char) => Eq (ConstantPoolInfo p)
 deriving instance Ord (p Char) => Ord (ConstantPoolInfo p)
 deriving instance Show (p Char) => Show (ConstantPoolInfo p)
 
+makeClassy ''ConstantPoolInfo
+makeClassyPrisms ''ConstantPoolInfo
+
 data ConstantPoolInfoError c =
   ConstantPoolInfoTagUnexpectedEof
   | ConstantPoolInfoUtf8LengthUnexpectedEof
@@ -122,6 +127,9 @@ data ConstantPoolInfoError c =
 deriving instance Eq (c Word8) => Eq (ConstantPoolInfoError c)
 deriving instance Ord (c Word8) => Ord (ConstantPoolInfoError c)
 deriving instance Show (c Word8) => Show (ConstantPoolInfoError c)
+
+makeClassy ''ConstantPoolInfoError
+makeClassyPrisms ''ConstantPoolInfoError
 
 {-
 class AsConstantClass p f s where

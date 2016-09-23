@@ -8,7 +8,6 @@
 module Language.Java.Class.MethodAccessFlags(
   MethodAccessFlags(..)
 , MethodAccessFlagsError(..)
-, methodAccessFlagsUnexpectedEof
 , getMethodAccessFlags
 ) where
 
@@ -39,15 +38,9 @@ instance Wrapped MethodAccessFlagsError where
 
 instance Rewrapped MethodAccessFlagsError MethodAccessFlagsError
 
-methodAccessFlagsUnexpectedEof ::
-  (Unwrapped t ~ (), Rewrapped t t) =>
-  t
-methodAccessFlagsUnexpectedEof =
-  _Wrapped # ()
-
 getMethodAccessFlags ::
   (Unwrapped e ~ (), Rewrapped e e) =>
   Get e MethodAccessFlags
 getMethodAccessFlags =
-  do  af <- methodAccessFlagsUnexpectedEof !- word16be
+  do  af <- _Wrapped # () !- word16be
       return (MethodAccessFlags af)

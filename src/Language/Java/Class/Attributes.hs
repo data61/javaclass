@@ -12,8 +12,6 @@ module Language.Java.Class.Attributes(
 , AttributesError(..)
 , HasAttributesError(..)
 , AsAttributesError(..)
-, attributesInfoUnexpectedEof
-, attributesAttributeError
 , getAttributes
 ) where
 
@@ -49,25 +47,11 @@ data AttributesError =
 makeClassy ''AttributesError
 makeClassyPrisms ''AttributesError
 
-attributesInfoUnexpectedEof ::
-  AsAttributesError t =>
-  t
-attributesInfoUnexpectedEof =
-  _AttributesInfoUnexpectedEof # ()
-
-attributesAttributeError ::
-  AsAttributesError t =>
-  Word16
-  -> AttributeError
-  -> t
-attributesAttributeError c a =
-  _AttributesAttributeError # (c, a)
-
 getAttributes ::
   (AsAttributesError e, Cons (s (Attribute a1)) (s (Attribute a1)) (Attribute a) (Attribute a), Cons (a Word8) (a Word8) Word8 Word8, AsEmpty (s (Attribute a1)), AsEmpty (a Word8)) =>
   Get e (Attributes a1 s)
 
 getAttributes =
-  do  c <- attributesInfoUnexpectedEof !- word16be
+  do  c <- _AttributesInfoUnexpectedEof # () !- word16be
       i <- (_AttributesAttributeError #) !!- replicateO (\n -> ((,) n) !!- getAttribute) c
       return (Attributes c i)
