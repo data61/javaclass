@@ -1,26 +1,20 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Language.Java.Class.ThisClass {- (
+module Language.Java.Class.ThisClass(
   ThisClass(..)
 , ThisClassError(..)
-, AsThisClassUnexpectedEof(..)
 , thisClassUnexpectedEof
-, thisClass
-) -} where
+, getThisClass
+) where
 
-import Control.Lens(Optic', Profunctor, iso, ( # ))
-import Control.Monad(return)
-import Data.Eq(Eq)
-import Data.Functor(Functor)
-import Data.Functor.Identity(Identity)
-import Data.Ord(Ord)
-import Data.Tagged(Tagged)
 import Data.Tickle(Get, word16be, (!-))
 import Data.Word(Word16)
-import Prelude(Show)
+import Papa
 
 -- |
 --
@@ -29,31 +23,30 @@ newtype ThisClass =
   ThisClass Word16
   deriving (Eq, Ord, Show)
 
+makeWrapped ''ThisClass
+
 data ThisClassError =
   ThisClassUnexpectedEof
   deriving (Eq, Ord, Show)
 
-{-
-class AsThisClassUnexpectedEof p f s where
-  _ThisClassUnexpectedEof :: 
-    Optic' p f s ()
-
-instance (Profunctor p, Functor f) => AsThisClassUnexpectedEof p f ThisClassError where
-  _ThisClassUnexpectedEof =
+instance Wrapped ThisClassError where
+  type Unwrapped ThisClassError = ()
+  _Wrapped' =
     iso
       (\_ -> ())
-      (\() -> ThisClassUnexpectedEof)
+      (\_ -> ThisClassUnexpectedEof)
+
+instance Rewrapped ThisClassError ThisClassError
 
 thisClassUnexpectedEof ::
-  AsThisClassUnexpectedEof Tagged Identity t =>
+  (Unwrapped t ~ (), Rewrapped t t) =>
   t
 thisClassUnexpectedEof =
-  _ThisClassUnexpectedEof # ()
+  _Wrapped # ()
 
-thisClass ::
-  AsThisClassUnexpectedEof Tagged Identity e =>
+getThisClass ::
+  (Unwrapped e ~ (), Rewrapped e e) =>
   Get e ThisClass
-thisClass =
-  do af <- thisClassUnexpectedEof !- word16be
-     return (ThisClass af)
--}
+getThisClass =
+  do  af <- thisClassUnexpectedEof !- word16be
+      return (ThisClass af)
