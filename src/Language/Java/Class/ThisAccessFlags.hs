@@ -48,5 +48,5 @@ getThisAccessFlags ::
   (Unwrapped e ~ (), Rewrapped e e) =>
   Get e ThisAccessFlags
 getThisAccessFlags =
-  do af <- thisAccessFlagsUnexpectedEof !- word16be
-     return (ThisAccessFlags af)
+  do  af <- thisAccessFlagsUnexpectedEof !- word16be
+      return (ThisAccessFlags af)

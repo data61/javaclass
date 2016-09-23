@@ -48,5 +48,5 @@ getSuperClass ::
   (Unwrapped e ~ (), Rewrapped e e) =>
   Get e SuperClass
 getSuperClass =
-  do af <- superClassUnexpectedEof !- word16be
-     return (SuperClass af)
+  do  af <- superClassUnexpectedEof !- word16be
+      return (SuperClass af)

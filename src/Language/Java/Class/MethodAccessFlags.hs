@@ -49,5 +49,5 @@ getMethodAccessFlags ::
   (Unwrapped e ~ (), Rewrapped e e) =>
   Get e MethodAccessFlags
 getMethodAccessFlags =
-  do af <- methodAccessFlagsUnexpectedEof !- word16be
-     return (MethodAccessFlags af)
+  do  af <- methodAccessFlagsUnexpectedEof !- word16be
+      return (MethodAccessFlags af)
