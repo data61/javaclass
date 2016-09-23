@@ -80,7 +80,7 @@ import Prelude(Show, Num((+)), Integral, fromIntegral, Float, Double)
 
 -- |
 --
--- < Table 4.3. Constant pool tags>
+-- <https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4-140 Table 4.3. Constant pool tags>
 data ConstantPoolInfo p =
   ConstantClass Word16
   | FieldRef Word16 Word16
