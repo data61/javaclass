@@ -60,10 +60,6 @@ module Language.Java.Class.ConstantPoolInfo {- (
 , constantPoolInfo'
 ) -} where
 
-import Control.Applicative(Applicative)
-import Control.Category((.))
-import Control.Lens -- (Optic', Choice, Cons, AsEmpty(_Empty), uncons, prism', (<|), ( # ))
-import Control.Monad(Monad(return, (>>=)))
 import Control.Replicate(replicateO)
 import Data.Bifunctor(bimap)
 import Data.Bits(Bits, shift, (.&.))
@@ -72,13 +68,11 @@ import Data.Char(Char, chr)
 import Data.Eq(Eq((==)))
 import Data.Functor.Identity(Identity)
 import Data.Int(Int32, Int64)
-import Data.Maybe(Maybe(Just, Nothing), fromMaybe)
-import Data.Ord(Ord)
-import Data.Tagged(Tagged)
+import Data.Maybe(fromMaybe)
 import Data.Tickle((!-), Get, failGet, word8, word16be, int32be, float32be, int64be, float64be)
 import Data.Tuple(curry, uncurry)
 import Data.Word(Word8, Word16)
-import Prelude(Show, Num((+)), Integral, fromIntegral, Float, Double)
+import Papa
 
 -- |
 --
@@ -180,7 +174,7 @@ getConstantPoolInfo' f =
               fromMaybe (failGet (_ConstantPoolInfoInvalidConstantPoolTag # t)) (f t) 
           
 getJavaString ::
-  (Integral a, Monad m, AsEmpty b, AsEmpty (m b), Cons s s a a, Cons b b Char Char, Bits a) =>
+  (Integral a, Bind m, Applicative m, AsEmpty b, AsEmpty (m b), Cons s s a a, Cons b b Char Char, Bits a) =>
   s
   -> m b
 getJavaString q =
@@ -203,10 +197,10 @@ getJavaString q =
                      bool
                        empty
                        (let i = ((fromIntegral x .&. 0x0F) `shift` 12 + (fromIntegral y .&. 0x3F) `shift` 6 + (fromIntegral z .&. 0x3F))
-                        in getJavaString rest3 >>= return . (chr i <|))
+                        in getJavaString rest3 >>= (return . (chr i <|)))
                        ((x .&. 0xF0) == 0xE0 && ((y .&. 0xC0) == 0x80) && ((z .&. 0xC0) == 0x80)))
                  (let i = (fromIntegral x .&. 0x1F) `shift` 6 + (fromIntegral y .&. 0x3F)
-                  in getJavaString rest2 >>= return . (chr i <|))
+                  in getJavaString rest2 >>= (return . (chr i <|)))
                  ((x .&. 0xE0) == 0xC0 && ((y .&. 0xC0) == 0x80)))
-           (getJavaString rest >>= return . (chr (fromIntegral x) <|))
+           (getJavaString rest >>= (return . (chr (fromIntegral x) <|)))
            ((x .&. 0x80) == 0)
