@@ -7,70 +7,24 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE FunctionalDependencies #-}
 
-module Language.Java.Class.ConstantPoolInfo {- (
+module Language.Java.Class.ConstantPoolInfo (
   ConstantPoolInfo(..)
-, AsConstantClass(..)
-, AsFieldRef(..)
-, AsMethodRef(..)
-, AsInterfaceMethodRef(..)
-, AsConstantString(..)
-, AsConstantInteger(..)
-, AsConstantFloat(..)
-, AsConstantLong(..)
-, AsConstantDouble(..)
-, AsNameAndType(..)
-, AsUtf8(..)
+, HasConstantPoolInfo(..)
+, AsConstantPoolInfo(..)
 , ConstantPoolInfoError(..)
-, AsConstantPoolInfoTagUnexpectedEof(..)
-, constantPoolInfoTagUnexpectedEof
-, AsConstantPoolInfoUtf8LengthUnexpectedEof(..)
-, constantPoolInfoUtf8LengthUnexpectedEof
-, AsConstantPoolInfoUtf8UnexpectedEof(..)
-, AsConstantPoolInvalidJavaString(..)
-, AsConstantPoolInfoConstantIntegerUnexpectedEof(..)
-, constantPoolInfoConstantIntegerUnexpectedEof
-, AsConstantPoolInfoConstantFloatUnexpectedEof(..)
-, constantPoolInfoConstantFloatUnexpectedEof
-, AsConstantPoolInfoConstantLongUnexpectedEof(..)
-, constantPoolInfoConstantLongUnexpectedEof
-, AsConstantPoolInfoConstantDoubleUnexpectedEof(..)
-, constantPoolInfoConstantDoubleUnexpectedEof
-, AsConstantPoolInfoConstantClassUnexpectedEof(..)
-, constantPoolInfoConstantClassUnexpectedEof
-, AsConstantPoolInfoConstantStringUnexpectedEof(..)
-, constantPoolInfoConstantStringUnexpectedEof
-, AsConstantPoolInfoFieldRef1UnexpectedEof(..)
-, constantPoolInfoFieldRef1UnexpectedEof
-, AsConstantPoolInfoFieldRef2UnexpectedEof(..)
-, constantPoolInfoFieldRef2UnexpectedEof
-, AsConstantPoolInfoMethodRef1UnexpectedEof(..)
-, constantPoolInfoMethodRef1UnexpectedEof
-, AsConstantPoolInfoMethodRef2UnexpectedEof(..)
-, constantPoolInfoMethodRef2UnexpectedEof
-, AsConstantPoolInfoInterfaceMethodRef1UnexpectedEof(..)
-, constantPoolInfoInterfaceMethodRef1UnexpectedEof
-, AsConstantPoolInfoInterfaceMethodRef2UnexpectedEof(..)
-, constantPoolInfoInterfaceMethodRef2UnexpectedEof
-, AsConstantPoolInfoNameAndType1UnexpectedEof(..)
-, constantPoolInfoNameAndType1UnexpectedEof
-, AsConstantPoolInfoNameAndType2UnexpectedEof(..)
-, constantPoolInfoNameAndType2UnexpectedEof
-, AsConstantPoolInfoInvalidConstantPoolTag(..)
-, constantPoolInfo
-, constantPoolInfo'
-) -} where
+, HasConstantPoolInfoError(..)
+, AsConstantPoolInfoError(..)
+, getConstantPoolInfo
+) where
 
 import Control.Replicate(replicateO)
 import Data.Bifunctor(bimap)
 import Data.Bits(Bits, shift, (.&.))
 import Data.Bool(bool, (&&))
-import Data.Char(Char, chr)
-import Data.Eq(Eq((==)))
-import Data.Functor.Identity(Identity)
+import Data.Char(chr)
 import Data.Int(Int32, Int64)
 import Data.Maybe(fromMaybe)
 import Data.Tickle((!-), Get, failGet, word8, word16be, int32be, float32be, int64be, float64be)
-import Data.Tuple(curry, uncurry)
 import Data.Word(Word8, Word16)
 import Papa
 
