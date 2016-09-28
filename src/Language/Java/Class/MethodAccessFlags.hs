@@ -7,7 +7,9 @@
 
 module Language.Java.Class.MethodAccessFlags(
   MethodAccessFlags(..)
+, HasMethodAccessFlags(..)
 , MethodAccessFlagsError(..)
+, HasMethodAccessFlagsError(..)
 , getMethodAccessFlags
 ) where
 
@@ -24,6 +26,7 @@ newtype MethodAccessFlags =
   deriving (Eq, Ord, Show)
 
 makeWrapped ''MethodAccessFlags
+makeClassy ''MethodAccessFlags
 
 data MethodAccessFlagsError =
   MethodAccessFlagsUnexpectedEof
@@ -37,6 +40,8 @@ instance Wrapped MethodAccessFlagsError where
       (\_ -> MethodAccessFlagsUnexpectedEof)
 
 instance Rewrapped MethodAccessFlagsError MethodAccessFlagsError
+
+makeClassy ''MethodAccessFlagsError
 
 getMethodAccessFlags ::
   (Unwrapped e ~ (), Rewrapped e e) =>

@@ -7,7 +7,9 @@
 
 module Language.Java.Class.ThisClass(
   ThisClass(..)
+, HasThisClass(..)
 , ThisClassError(..)
+, HasThisClassError(..)
 , getThisClass
 ) where
 
@@ -23,6 +25,7 @@ newtype ThisClass =
   deriving (Eq, Ord, Show)
 
 makeWrapped ''ThisClass
+makeClassy ''ThisClass
 
 data ThisClassError =
   ThisClassUnexpectedEof
@@ -36,6 +39,8 @@ instance Wrapped ThisClassError where
       (\_ -> ThisClassUnexpectedEof)
 
 instance Rewrapped ThisClassError ThisClassError
+
+makeClassy ''ThisClassError
 
 getThisClass ::
   (Unwrapped e ~ (), Rewrapped e e) =>

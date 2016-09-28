@@ -7,7 +7,9 @@
 
 module Language.Java.Class.FieldAccessFlags(
   FieldAccessFlags(..)
+, HasFieldAccessFlags(..)
 , FieldAccessFlagsError(..)
+, HasFieldAccessFlagsError(..)
 , getFieldAccessFlags
 ) where
 
@@ -24,6 +26,7 @@ newtype FieldAccessFlags =
   deriving (Eq, Ord, Show)
 
 makeWrapped ''FieldAccessFlags
+makeClassy ''FieldAccessFlags
 
 data FieldAccessFlagsError =
   FieldAccessFlagsUnexpectedEof
@@ -37,6 +40,8 @@ instance Wrapped FieldAccessFlagsError where
       (\_ -> FieldAccessFlagsUnexpectedEof)
 
 instance Rewrapped FieldAccessFlagsError FieldAccessFlagsError
+
+makeClassy ''FieldAccessFlagsError
 
 getFieldAccessFlags ::
   (Unwrapped e ~ (), Rewrapped e e) =>

@@ -7,7 +7,9 @@
 
 module Language.Java.Class.ThisAccessFlags(
   ThisAccessFlags(..)
+, HasThisAccessFlags(..)
 , ThisAccessFlagsError(..)
+, HasThisAccessFlagsError(..)
 , getThisAccessFlags
 ) where
 
@@ -23,6 +25,7 @@ newtype ThisAccessFlags =
   deriving (Eq, Ord, Show)
 
 makeWrapped ''ThisAccessFlags
+makeClassy ''ThisAccessFlags
 
 data ThisAccessFlagsError =
   ThisAccessFlagsUnexpectedEof
@@ -36,6 +39,8 @@ instance Wrapped ThisAccessFlagsError where
       (\_ -> ThisAccessFlagsUnexpectedEof)
 
 instance Rewrapped ThisAccessFlagsError ThisAccessFlagsError
+
+makeClassy ''ThisAccessFlagsError
 
 getThisAccessFlags ::
   (Unwrapped e ~ (), Rewrapped e e) =>

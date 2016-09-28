@@ -7,7 +7,9 @@
 
 module Language.Java.Class.SuperClass(
   SuperClass(..)
+, HasSuperClass(..)
 , SuperClassError(..)
+, HasSuperClassError(..)
 , getSuperClass
 ) where
 
@@ -23,6 +25,7 @@ newtype SuperClass =
   deriving (Eq, Ord, Show)
 
 makeWrapped ''SuperClass
+makeClassy ''SuperClass
 
 data SuperClassError =
   SuperClassUnexpectedEof
@@ -36,6 +39,8 @@ instance Wrapped SuperClassError where
       (\_ -> SuperClassUnexpectedEof)
 
 instance Rewrapped SuperClassError SuperClassError
+
+makeClassy ''SuperClassError
 
 getSuperClass ::
   (Unwrapped e ~ (), Rewrapped e e) =>

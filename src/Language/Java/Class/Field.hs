@@ -13,6 +13,7 @@ module Language.Java.Class.Field(
   Field(..)
 , HasField(..)
 , FieldErrorAttributeError(..)
+, HasFieldErrorAttributeError(..)
 , FieldError(..)
 , HasFieldError(..)
 , AsFieldError(..)
@@ -55,6 +56,7 @@ newtype FieldErrorAttributeError =
   deriving (Eq, Ord, Show)
 
 makeWrapped ''FieldErrorAttributeError
+makeClassy ''FieldErrorAttributeError
 
 instance AsAttributeError FieldErrorAttributeError where
   _AttributeError =
