@@ -7,7 +7,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE FunctionalDependencies #-}
 
-module Language.Java.Class.ConstantPoolInfo (
+module Language.Java.Class.ConstantPoolInfo(
   ConstantPoolInfo(..)
 , HasConstantPoolInfo(..)
 , AsConstantPoolInfo(..)
@@ -80,53 +80,55 @@ makeClassy ''ConstantPoolInfoError
 makeClassyPrisms ''ConstantPoolInfoError
 
 getConstantPoolInfo ::
-  (AsConstantPoolInfoError (() -> t) c1, AsConstantPoolInfoError t c, AsConstantPoolInfo b p, Cons (p Char) (p Char) Char Char, Cons (c1 Word8) (c1 Word8) Word8 Word8, AsEmpty (p Char), AsEmpty (c1 Word8)) =>
-  Get (() -> t) b
+  (AsConstantPoolInfoError e c, AsConstantPoolInfo b p, Cons (p Char) (p Char) Char Char, Cons (c Word8) (c Word8) Word8 Word8, AsEmpty (p Char), AsEmpty (c Word8)) =>
+  Get e b
 getConstantPoolInfo =
   getConstantPoolInfo' (\_ -> Nothing)
 
 getConstantPoolInfo' ::
-  (AsConstantPoolInfoError (() -> t) c1, AsConstantPoolInfoError t c, AsConstantPoolInfo b p, Cons (c1 Word8) (c1 Word8) Word8 Word8, Cons (p Char) (p Char) Char Char, AsEmpty (c1 Word8), AsEmpty (p Char)) =>
-  (Word8 -> Maybe (Get (() -> t) b)) -> Get (() -> t) b
+  (AsConstantPoolInfoError e c, AsConstantPoolInfo b p, Cons (c Word8) (c Word8) Word8 Word8, Cons (p Char) (p Char) Char Char, AsEmpty (c Word8),
+ AsEmpty (p Char)) =>
+  (Word8 -> Maybe (Get e b))
+  -> Get e b
 getConstantPoolInfo' f =
   let eset = bimap . return
       two16 t e1 e2 =
         do  c <- e1 !- word16be
             n <- e2 !- word16be
             return (t c n)
-  in  do  t <- (_ConstantPoolInfoTagUnexpectedEof #) !- word8
+  in  do  t <- (_ConstantPoolInfoTagUnexpectedEof # ()) !- word8
           case t of
             1 ->
-              do  l <- (_ConstantPoolInfoUtf8LengthUnexpectedEof #) !- word16be
+              do  l <- (_ConstantPoolInfoUtf8LengthUnexpectedEof # ()) !- word16be
                   b <- replicateO (\n -> _ConstantPoolInfoUtf8UnexpectedEof # n !- word8) l
                   case getJavaString b of
                     Nothing ->
                       failGet (_ConstantPoolInvalidJavaString # b)
                     Just s ->
-                      return (_Utf8 # (l, s)) 
+                      return (_Utf8 # (l, s))
             3 ->
-              eset (_ConstantPoolInfoConstantIntegerUnexpectedEof #) (_ConstantInteger #) int32be
+              eset (_ConstantPoolInfoConstantIntegerUnexpectedEof # ()) (_ConstantInteger #) int32be
             4 ->
-              eset (_ConstantPoolInfoConstantFloatUnexpectedEof #) (_ConstantFloat #) float32be
+              eset (_ConstantPoolInfoConstantFloatUnexpectedEof # ()) (_ConstantFloat #) float32be
             5 ->
-              eset (_ConstantPoolInfoConstantLongUnexpectedEof #) (_ConstantLong #) int64be
+              eset (_ConstantPoolInfoConstantLongUnexpectedEof # ()) (_ConstantLong #) int64be
             6 ->
-              eset (_ConstantPoolInfoConstantDoubleUnexpectedEof #) (_ConstantDouble #) float64be
+              eset (_ConstantPoolInfoConstantDoubleUnexpectedEof # ()) (_ConstantDouble #) float64be
             7 ->
-              eset (_ConstantPoolInfoConstantClassUnexpectedEof #) (_ConstantClass #) word16be
+              eset (_ConstantPoolInfoConstantClassUnexpectedEof # ()) (_ConstantClass #) word16be
             8 ->
-              eset (_ConstantPoolInfoConstantStringUnexpectedEof #) (_ConstantString #) word16be
+              eset (_ConstantPoolInfoConstantStringUnexpectedEof # ()) (_ConstantString #) word16be
             9 ->
-              two16 (curry (_FieldRef #)) (_ConstantPoolInfoFieldRef1UnexpectedEof #) (_ConstantPoolInfoFieldRef2UnexpectedEof #)
+              two16 (curry (_FieldRef #)) (_ConstantPoolInfoFieldRef1UnexpectedEof # ()) (_ConstantPoolInfoFieldRef2UnexpectedEof # ())
             10 ->
-              two16 (curry (_MethodRef #)) (_ConstantPoolInfoMethodRef1UnexpectedEof #) (_ConstantPoolInfoMethodRef2UnexpectedEof #)
+              two16 (curry (_MethodRef #)) (_ConstantPoolInfoMethodRef1UnexpectedEof # ()) (_ConstantPoolInfoMethodRef2UnexpectedEof # ())
             11 ->
-              two16 (curry (_InterfaceMethodRef #)) (_ConstantPoolInfoInterfaceMethodRef1UnexpectedEof #) (_ConstantPoolInfoMethodRef2UnexpectedEof #)
+              two16 (curry (_InterfaceMethodRef #)) (_ConstantPoolInfoInterfaceMethodRef1UnexpectedEof # ()) (_ConstantPoolInfoMethodRef2UnexpectedEof # ())
             12 ->
-              two16 (curry (_NameAndType #)) (_ConstantPoolInfoNameAndType1UnexpectedEof #) (_ConstantPoolInfoNameAndType2UnexpectedEof #)
+              two16 (curry (_NameAndType #)) (_ConstantPoolInfoNameAndType1UnexpectedEof # ()) (_ConstantPoolInfoNameAndType2UnexpectedEof # ())
             _ ->
-              fromMaybe (failGet (_ConstantPoolInfoInvalidConstantPoolTag # t)) (f t) 
-          
+              fromMaybe (failGet (_ConstantPoolInfoInvalidConstantPoolTag # t)) (f t)
+
 getJavaString ::
   (Integral a, Bind m, Applicative m, AsEmpty b, AsEmpty (m b), Cons s s a a, Cons b b Char Char, Bits a) =>
   s
